@@ -1,4 +1,4 @@
-codeunit 60250 "Vendor Exclusivity Management"
+codeunit 60250 "Vendor Exclusivity Mgmt"
 {
     procedure CheckIfAllowed(ItemNo: Code[20]; DocumentNo: Code[20])
     var

@@ -1,4 +1,4 @@
-pageextension 60251 "Sales Orders" extends "Customer List"
+pageextension 60250 "Sales Order" extends "Sales Order"
 {
     layout
     {
@@ -7,7 +7,7 @@ pageextension 60251 "Sales Orders" extends "Customer List"
 
     actions
     {
-        addafter(Action24)
+        addafter(Action21)
         {
             action(InformVendor)
             {
@@ -15,11 +15,13 @@ pageextension 60251 "Sales Orders" extends "Customer List"
                 Caption = 'Inform Vendor';
                 Image = Info;
                 ToolTip = 'Inform the vendor about the sales lines in this order';
-                //Visible = Rec."Is From Ex Vendor";
+                Visible = Rec."Is From Exclusive Vendor";
 
                 trigger OnAction()
+                var
+                    WebServiceMgmt: Codeunit "Web Service Mgmt";
                 begin
-                    //Page.Run(Page::"Posting Email Setup");
+                    WebServiceMgmt.Inform(Rec);
                 end;
             }
         }
