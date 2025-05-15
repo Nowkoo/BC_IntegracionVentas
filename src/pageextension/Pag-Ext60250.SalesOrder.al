@@ -7,6 +7,16 @@ pageextension 60250 "Sales Order" extends "Sales Order"
 
     actions
     {
+        modify(Post)
+        {
+            trigger OnBeforeAction()
+            var
+                SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+            begin
+                SentLinesMgmt.CheckIfPostIsAllowed(Rec."No.", Rec."Is From Exclusive Vendor");
+            end;
+        }
+
         addafter(Action21)
         {
             action(InformVendor)
@@ -14,14 +24,30 @@ pageextension 60250 "Sales Order" extends "Sales Order"
                 ApplicationArea = All;
                 Caption = 'Inform Vendor';
                 Image = Info;
-                ToolTip = 'Inform the vendor about the sales lines in this order';
+                ToolTip = 'Inform the vendor about the sales lines in this order.';
                 Visible = Rec."Is From Exclusive Vendor";
 
                 trigger OnAction()
                 var
-                    WebServiceMgmt: Codeunit "Web Service Mgmt";
+                    SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
                 begin
-                    WebServiceMgmt.Inform(Rec);
+                    SentLinesMgmt.Inform(Rec."No.");
+                end;
+            }
+
+            action(PrepareLines)
+            {
+                ApplicationArea = All;
+                Caption = 'Prepare Lines';
+                Image = GetLines;
+                ToolTip = 'Updates the sales line in the order based on changes made by the vendor.';
+                Visible = Rec."Is From Exclusive Vendor";
+
+                trigger OnAction()
+                var
+                    SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+                begin
+                    SentLinesMgmt.PrepareLines(Rec."No.");
                 end;
             }
         }

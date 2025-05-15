@@ -13,13 +13,20 @@ page 60250 "Exclusive Vendor Setup"
         {
             field("Vendor No"; Rec."Vendor No")
             {
+                Caption = 'Vendor No.';
                 ApplicationArea = All;
                 TableRelation = Vendor."No.";
             }
             field("Vendor Name"; Rec."Vendor Name")
             {
+                Caption = 'Vendor Name';
                 ApplicationArea = All;
                 Editable = false;
+            }
+            field("Web Service URL"; Rec."Vendor Web Service")
+            {
+                Caption = 'Web Service URL';
+                ApplicationArea = All;
             }
         }
     }

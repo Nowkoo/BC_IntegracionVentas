@@ -7,6 +7,16 @@ pageextension 60251 "Sales Orders" extends "Sales Order List"
 
     actions
     {
+        modify(Post)
+        {
+            trigger OnBeforeAction()
+            var
+                SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+            begin
+                SentLinesMgmt.CheckIfPostIsAllowed(Rec."No.", Rec."Is From Exclusive Vendor");
+            end;
+        }
+
         addafter(Action12)
         {
             action(InformVendor)
@@ -19,9 +29,9 @@ pageextension 60251 "Sales Orders" extends "Sales Order List"
 
                 trigger OnAction()
                 var
-                    WebServiceMgmt: Codeunit "Web Service Mgmt";
+                    SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
                 begin
-                    WebServiceMgmt.Inform(Rec);
+                    SentLinesMgmt.Inform(Rec."No.");
                 end;
             }
         }

@@ -1,31 +1,40 @@
-table 60250 "Exclusive Vendor"
+table 60251 "Sent Lines"
 {
     DataClassification = CustomerContent;
 
     fields
     {
-        field(1; "Key Field"; Code[20])
-        {
-            DataClassification = CustomerContent;
-            Editable = false;
-        }
-        field(2; "Vendor No"; Code[20])
+        field(1; "Document No."; Code[20])
         {
             DataClassification = CustomerContent;
 
-            trigger OnValidate()
-            var
-                Vendor: Record Vendor;
-            begin
-                if Vendor.Get(Rec."Vendor No") then
-                    "Vendor Name" := Vendor.Name;
-            end;
         }
-        field(3; "Vendor Name"; Text[100])
+        field(2; "Line No."; Code[20])
         {
             DataClassification = CustomerContent;
+
         }
-        field(4; "Vendor Web Service"; Text[100])
+        field(3; "No."; Code[20])
+        {
+            DataClassification = CustomerContent;
+
+        }
+        field(4; "Description"; Text[100])
+        {
+            DataClassification = CustomerContent;
+
+        }
+        field(5; "Quantity"; Integer)
+        {
+            DataClassification = CustomerContent;
+
+        }
+        field(6; "Vendor Item No."; Text[50])
+        {
+            DataClassification = CustomerContent;
+
+        }
+        field(7; "Ready"; Boolean)
         {
             DataClassification = CustomerContent;
         }
@@ -33,15 +42,10 @@ table 60250 "Exclusive Vendor"
 
     keys
     {
-        key(Pk; "Key Field")
+        key(Pk; "Document No.", "Line No.")
         {
             Clustered = true;
         }
-    }
-
-    fieldgroups
-    {
-        // Add changes to field groups here
     }
 
     trigger OnInsert()

@@ -1,6 +1,6 @@
 codeunit 60250 "Vendor Exclusivity Mgmt"
 {
-    procedure CheckIfAllowed(ItemNo: Code[20]; DocumentNo: Code[20])
+    procedure CheckIfInsertIsAllowed(ItemNo: Code[20]; DocumentNo: Code[20])
     var
         SalesLine: Record "Sales Line";
         Item: Record "Item";
@@ -43,6 +43,7 @@ codeunit 60250 "Vendor Exclusivity Mgmt"
         Item: Record "Item";
     begin
         SalesLine.SetRange("Document No.", DocumentNo);
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
         if SalesLine.FindSet() then
             repeat
                 if Item.Get(SalesLine."No.") then begin
@@ -59,6 +60,7 @@ codeunit 60250 "Vendor Exclusivity Mgmt"
         Item: Record "Item";
     begin
         SalesLine.SetRange("Document No.", DocumentNo);
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
         if SalesLine.FindSet() then
             repeat
                 if Item.Get(SalesLine."No.") then begin

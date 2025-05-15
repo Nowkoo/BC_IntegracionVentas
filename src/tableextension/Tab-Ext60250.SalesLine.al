@@ -4,6 +4,7 @@ tableextension 60250 "Sales Line" extends "Sales Line"
     {
         field(303; "Status"; Enum Status)
         {
+            Caption = 'Status';
             DataClassification = CustomerContent;
         }
 
@@ -15,15 +16,21 @@ tableextension 60250 "Sales Line" extends "Sales Line"
                 SalesLine: Record "Sales Line";
             begin
                 SalesLine.SetRange("Document No.", Rec."Document No.");
-                if SalesLine.FindSet() and (SalesLine.Count = 1) then begin
-                    if xRec."No." = '' then begin
-                        //es un insert
-                        VendorExclusivityMgmt.CheckIfAllowed(Rec."No.", Rec."Document No.");
-                        VendorExclusivityMgmt.UpdateOrderOwnership(Rec."Document No.", Rec."No.")
-                    end
+                //Modificación de la primera línea
+                if SalesLine.FindSet() then begin
+                    if (SalesLine.Count = 1) and (xRec."No." <> '') then begin
+                        VendorExclusivityMgmt.UpdateOrderOwnership(Rec."Document No.", Rec."No.");
+                    end;
                 end
-                else
-                    VendorExclusivityMgmt.CheckIfAllowed(Rec."No.", Rec."Document No.");
+                else begin
+                    //Inserción de la primera línea
+                    if xRec."No." = '' then begin
+                        VendorExclusivityMgmt.CheckIfInsertIsAllowed(Rec."No.", Rec."Document No.");
+                        VendorExclusivityMgmt.UpdateOrderOwnership(Rec."Document No.", Rec."No.");
+                    end
+                    else
+                        VendorExclusivityMgmt.CheckIfInsertIsAllowed(Rec."No.", Rec."Document No.");
+                end;
             end;
         }
     }
@@ -42,5 +49,17 @@ tableextension 60250 "Sales Line" extends "Sales Line"
 
         if not SalesLine.FindFirst() then
             VendorExclusivityMgmt.RemoveOrderOwnership(rec."Document No.");
+    end;
+
+    trigger OnAfterModify()
+    var
+        SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+        ExclusiveVendor: Record "Exclusive Vendor";
+        SalesHeader: Record "Sales Header";
+    begin
+        SalesHeader.Get(SalesHeader."Document Type"::Order, Rec."Document No.");
+        if ExclusiveVendor.Get() and SalesHeader."Is From Exclusive Vendor" and (Rec.Status = Status::Sent) then begin
+            SentLinesMgmt.RemoveLineFromWS(Rec.SystemId);
+        end;
     end;
 }
