@@ -115,7 +115,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         JsonArray: JsonArray;
         JsonText: Text;
 
-        ReturnedLines: List of [Text];
+        LineNosFromOrderInWS: List of [Text];
         LineNoText: Text;
         IsLineReady: Boolean;
         URL: Text;
@@ -125,9 +125,8 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
         //	/?$filter=documentNo eq '101012' and ready eq true
         //	/?$filter=documentNo eq '%1' and ready eq %2
-        URL := GetUrl() + '/?$filter=documentNo eq ''' + SalesHeaderNo + ''' and ready eq true';
-        Message(URL);
-        if not HttpClient.Get(GetUrl(), HttpResponseMessage) then
+        URL := GetUrl() + '/?$filter=documentNo eq ''' + SalesHeaderNo + '''';
+        if not HttpClient.Get(URL, HttpResponseMessage) then
             Error(ErrorCallFailedLbl);
 
         if not HttpResponseMessage.IsSuccessStatusCode then
@@ -142,39 +141,41 @@ codeunit 60251 "Sent Lines Mgmt Cust"
 
         foreach JsonToken in JsonArray do begin
             JsonObject := JsonToken.AsObject();
-
             Evaluate(IsLineReady, GetJsonText(JsonObject, 'ready'));
-            if IsLineReady and (GetJsonText(JsonObject, 'documentNo') = SalesHeaderNo) then begin
+
+            if IsLineReady then begin
                 //Si lineNo está vacío es una nueva línea creada por el proveedor
                 if GetJsonText(JsonObject, 'lineNo') = '' then
                     InsertSalesLineFromJsonObject(JsonObject)
                 else begin
                     UpdateSalesLineFromJsonObject(JsonObject);
-                    ReturnedLines.Add(GetJsonText(JsonObject, 'lineNo'));
                 end;
             end;
+            LineNosFromOrderInWS.Add(GetJsonText(JsonObject, 'lineNo'));
         end;
 
+        //Se borran todas las que no están en LineNosFromOrderInWS
+        DeleteMissingSentLines(SalesHeaderNo, LineNosFromOrderInWS);
 
-        DeleteLinesRemovedFromWS(SalesHeaderNo, ReturnedLines);
-
+        //Eliminar las líneas que ya se han procesado del web service
         foreach JsonToken in JsonArray do begin
-            if IsLineReady and (GetJsonText(JsonObject, 'documentNo') = SalesHeaderNo) then
+            JsonObject := JsonToken.AsObject();
+            Evaluate(IsLineReady, GetJsonText(JsonObject, 'ready'));
+            if IsLineReady then
                 RemoveLineFromWS(GetJsonText(JsonObject, 'id'));
         end;
     end;
 
-    local procedure DeleteLinesRemovedFromWS(SalesHeaderNo: Code[20]; ReturnedLines: List of [Text])
+    local procedure DeleteMissingSentLines(SalesHeaderNo: Code[20]; LineNosFromOrderInWS: List of [Text])
     var
         SalesLine: Record "Sales Line";
-        text: Text;
     begin
         SalesLine.SetRange("Document No.", SalesHeaderNo);
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
         SalesLine.SetRange(Type, SalesLine.Type::Item);
         if SalesLine.FindSet() then
             repeat
-                if (SalesLine.Status = SalesLine.Status::Sent) and not ReturnedLines.Contains(Format(SalesLine."Line No.")) then begin
+                if (SalesLine.Status = SalesLine.Status::Sent) and not LineNosFromOrderInWS.Contains(Format(SalesLine."Line No.")) then begin
                     SalesLine.Delete();
                 end;
             until SalesLine.Next() = 0;
@@ -327,5 +328,9 @@ codeunit 60251 "Sent Lines Mgmt Cust"
     *La url del borrado no es correcta.
     *Cuando el cliente consulta y elimina las líneas consultadas, la lista del proveedor no se actualiza.
     *Cuando el cliente borra una línea, eliminarla del web service.
+    *Cuando no se marcan las líneas como preparadas y se consultan, a veces se eliminan las líneas locales
+    *Añadir document no en sent lines del proveedor
+    *Visualización del Vendor Item No. al insertar nuevas líneas en sent lines del proveedor
+    *Revisar InsertSalesLineFromJsonObject. Si el vendor item no es del otro proveedor qué
     */
 }
