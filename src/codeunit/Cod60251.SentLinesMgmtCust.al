@@ -1,3 +1,4 @@
+//https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/webservices/web-services-authentication
 codeunit 60251 "Sent Lines Mgmt Cust"
 {
     procedure CheckIfPostIsAllowed(SalesHeaderNo: Code[20]; IsFromExclusiveVendor: Boolean)
@@ -57,6 +58,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         HttpClient: HttpClient;
     begin
         //Añadir autentificación a content headers
+        AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
         HttpContent.WriteFrom(JsonText);
         HttpContent.GetHeaders(HttpContentHeaders);
         HttpContentHeaders.Remove('Content-Type');
@@ -114,13 +116,17 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         JsonText: Text;
 
         ReturnedLines: List of [Text];
-        SalesLine: Record "Sales Line";
         LineNoText: Text;
         IsLineReady: Boolean;
+        URL: Text;
 
-        ErrorInvalidResponseLbl: Label 'Invalid response, expected a JSON array as root object.';
-    //Base64Convert: Codeunit "Base64 Convert";
+        ErrorInvalidResponseLbl: Label 'Invalid response, expected a JSON object as root object.';
     begin
+        AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
+        //	/?$filter=documentNo eq '101012' and ready eq true
+        //	/?$filter=documentNo eq '%1' and ready eq %2
+        URL := GetUrl() + '/?$filter=documentNo eq ''' + SalesHeaderNo + ''' and ready eq true';
+        Message(URL);
         if not HttpClient.Get(GetUrl(), HttpResponseMessage) then
             Error(ErrorCallFailedLbl);
 
@@ -128,9 +134,11 @@ codeunit 60251 "Sent Lines Mgmt Cust"
             Error(ErrorWSLbl, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase);
 
         HttpResponseMessage.Content.ReadAs(JsonText);
-
-        if not JsonArray.ReadFrom(JsonText) then
+        if not JsonObject.ReadFrom(JsonText) then
             Error(ErrorInvalidResponseLbl);
+
+        JsonObject.Get('value', JsonToken);
+        JsonArray := JsonToken.AsArray();
 
         foreach JsonToken in JsonArray do begin
             JsonObject := JsonToken.AsObject();
@@ -144,18 +152,31 @@ codeunit 60251 "Sent Lines Mgmt Cust"
                     UpdateSalesLineFromJsonObject(JsonObject);
                     ReturnedLines.Add(GetJsonText(JsonObject, 'lineNo'));
                 end;
-                RemoveLineFromWS(GetJsonText(JsonObject, 'id'));
             end;
         end;
 
-        //Eliminar las líneas del pedido que no están en el web service (el proveedor las ha borrado)
+
+        DeleteLinesRemovedFromWS(SalesHeaderNo, ReturnedLines);
+
+        foreach JsonToken in JsonArray do begin
+            if IsLineReady and (GetJsonText(JsonObject, 'documentNo') = SalesHeaderNo) then
+                RemoveLineFromWS(GetJsonText(JsonObject, 'id'));
+        end;
+    end;
+
+    local procedure DeleteLinesRemovedFromWS(SalesHeaderNo: Code[20]; ReturnedLines: List of [Text])
+    var
+        SalesLine: Record "Sales Line";
+        text: Text;
+    begin
         SalesLine.SetRange("Document No.", SalesHeaderNo);
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
         SalesLine.SetRange(Type, SalesLine.Type::Item);
         if SalesLine.FindSet() then
             repeat
-                if not ReturnedLines.Contains(Format(SalesLine."Line No.")) then
+                if (SalesLine.Status = SalesLine.Status::Sent) and not ReturnedLines.Contains(Format(SalesLine."Line No.")) then begin
                     SalesLine.Delete();
+                end;
             until SalesLine.Next() = 0;
     end;
 
@@ -245,16 +266,26 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         HttpClient: HttpClient;
         HttpResponseMessage: HttpResponseMessage;
         URL: Text;
-
     begin
-
         URL := GetUrl() + '(' + id + ')';
+        AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
 
         if not HttpClient.Delete(URL, HttpResponseMessage) then
             Error(ErrorCallFailedLbl);
 
         if not HttpResponseMessage.IsSuccessStatusCode then
             Error(ErrorWSLbl, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase);
+    end;
+
+    procedure AddHttpBasicAuthHeader(UserName: Text[50]; Password: Text[50]; var HttpClient: HttpClient);
+    var
+        AuthString: Text;
+        Base64Convert: Codeunit "Base64 Convert";
+    begin
+        AuthString := STRSUBSTNO('%1:%2', UserName, Password);
+        AuthString := Base64Convert.ToBase64(AuthString);
+        AuthString := STRSUBSTNO('Basic %1', AuthString);
+        HttpClient.DefaultRequestHeaders().Add('Authorization', AuthString);
     end;
 
     var
@@ -291,5 +322,10 @@ codeunit 60251 "Sent Lines Mgmt Cust"
 
     Si el estado de la línea es enviado, no se permite enviar otra vez.
     Si la línea se modifica y pasa de enviada a preparada, se elimina del WS.
+
+    *Extender subform para que se vea el estado de cada línea
+    *La url del borrado no es correcta.
+    *Cuando el cliente consulta y elimina las líneas consultadas, la lista del proveedor no se actualiza.
+    *Cuando el cliente borra una línea, eliminarla del web service.
     */
 }

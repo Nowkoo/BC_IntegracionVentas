@@ -34,6 +34,22 @@ pageextension 60251 "Sales Orders" extends "Sales Order List"
                     SentLinesMgmt.Inform(Rec."No.");
                 end;
             }
+
+            action(PrepareLines)
+            {
+                ApplicationArea = All;
+                Caption = 'Prepare Lines';
+                Image = GetLines;
+                ToolTip = 'Updates the sales line in the order based on changes made by the vendor.';
+                Visible = Rec."Is From Exclusive Vendor";
+
+                trigger OnAction()
+                var
+                    SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+                begin
+                    SentLinesMgmt.PrepareLines(Rec."No.");
+                end;
+            }
         }
     }
 }

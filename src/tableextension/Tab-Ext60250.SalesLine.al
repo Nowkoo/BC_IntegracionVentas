@@ -42,13 +42,16 @@ tableextension 60250 "Sales Line" extends "Sales Line"
 
     trigger OnAfterDelete()
     var
+        SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
         VendorExclusivityMgmt: Codeunit "Vendor Exclusivity Mgmt";
         SalesLine: Record "Sales Line";
     begin
+        //Si no quedan líneas, el pedido no es de nadie
         SalesLine.SetRange("Document No.", Rec."Document No.");
-
         if not SalesLine.FindFirst() then
             VendorExclusivityMgmt.RemoveOrderOwnership(rec."Document No.");
+
+        SentLinesMgmt.RemoveLineFromWS(Rec.SystemId);
     end;
 
     trigger OnAfterModify()
@@ -58,7 +61,7 @@ tableextension 60250 "Sales Line" extends "Sales Line"
         SalesHeader: Record "Sales Header";
     begin
         SalesHeader.Get(SalesHeader."Document Type"::Order, Rec."Document No.");
-        if ExclusiveVendor.Get() and SalesHeader."Is From Exclusive Vendor" and (Rec.Status = Status::Sent) then begin
+        if ExclusiveVendor.Get() and SalesHeader."Is From Exclusive Vendor" and (Rec.Status <> Status::Pending) then begin
             SentLinesMgmt.RemoveLineFromWS(Rec.SystemId);
         end;
     end;
