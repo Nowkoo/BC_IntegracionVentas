@@ -23,9 +23,14 @@ page 60250 "Exclusive Vendor Setup"
                 ApplicationArea = All;
                 Editable = false;
             }
-            field("Web Service URL"; Rec."Vendor Web Service")
+            field("Sent Headers URL"; Rec."Headers Web Service")
             {
-                Caption = 'Web Service URL';
+                Caption = 'Sent Headers URL';
+                ApplicationArea = All;
+            }
+            field("Sent Lines URL"; Rec."Lines Web Service")
+            {
+                Caption = 'Sent Lines URL';
                 ApplicationArea = All;
             }
         }

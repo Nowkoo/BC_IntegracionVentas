@@ -1,4 +1,4 @@
-//https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/webservices/web-services-authentication
+/* //https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/webservices/web-services-authentication
 codeunit 60251 "Sent Lines Mgmt Cust"
 {
     procedure CheckIfPostIsAllowed(SalesHeaderNo: Code[20]; IsFromExclusiveVendor: Boolean)
@@ -32,16 +32,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         SalesLine: Record "Sales Line";
         JsonText: Text;
         Url: Text;
-        JsonObject: JsonObject;
     begin
-        //Post del header
-        if GetSentHeaderWebServiceId(SalesHeaderNo) = '' then begin
-            JsonText := SalesHeaderToJsonText(SalesHeaderNo);
-            Url := GetSentHeadersBaseUrl();
-            Post(Url, JsonText);
-        end;
-
-        //Post de las líneas
         SalesLine.SetRange("Document No.", SalesHeaderNo);
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
         SalesLine.SetRange(Type, SalesLine.Type::Item);
@@ -49,75 +40,13 @@ codeunit 60251 "Sent Lines Mgmt Cust"
             repeat
                 if SalesLine.Status = SalesLine.Status::Pending then begin
                     JsonText := SalesLineToJsonText(SalesLine);
-                    Url := GetSentLinesBaseUrl();
+                    Url := GetUrl();
                     Post(Url, JsonText);
 
                     SalesLine.Status := Status::Sent;
                     SalesLine.Modify();
                 end;
             until SalesLine.Next() = 0;
-    end;
-
-    procedure RemoveHeaderFromWS(SalesHeaderNo: Code[20])
-    var
-        Url: Text;
-        WebServiceId: Text;
-    begin
-        WebServiceId := GetSentHeaderWebServiceId(SalesHeaderNo);
-        if WebServiceId = '' then
-            exit;
-        URL := GetSentHeadersBaseUrl() + '(' + WebServiceId + ')';
-        Delete(Url);
-    end;
-
-    local procedure Delete(URL: Text)
-    var
-        HttpClient: HttpClient;
-        HttpResponseMessage: HttpResponseMessage;
-    begin
-        AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
-
-        if not HttpClient.Delete(URL, HttpResponseMessage) then
-            Error(ErrorCallFailedLbl);
-
-        if not HttpResponseMessage.IsSuccessStatusCode then
-            Error(ErrorWSLbl, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase);
-    end;
-
-    procedure ChangeDocumentStatus(SalesHeaderNo: Code[20])
-    var
-        Url: Text;
-        JsonText: Text;
-        JsonObject: JsonObject;
-    begin
-        JsonObject.Add('documentStatus', 1);
-        JsonObject.WriteTo(JsonText);
-        URL := GetSentHeadersBaseUrl() + '(' + SalesHeaderNo + ')';
-        Patch(Url, JsonText);
-    end;
-
-    local procedure Patch(URL: Text; JsonText: Text)
-    var
-        HttpRequestMessage: HttpRequestMessage;
-        HttpResponseMessage: HttpResponseMessage;
-        HttpContent: HttpContent;
-        HttpContentHeaders: HttpHeaders;
-        HttpClient: HttpClient;
-    begin
-        AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
-        HttpContent.WriteFrom(JsonText);
-        HttpContent.GetHeaders(HttpContentHeaders);
-        HttpContentHeaders.Remove('Content-Type');
-        HttpContentHeaders.Add('Content-Type', 'application/json');
-        HttpRequestMessage.Content := HttpContent;
-        HttpRequestMessage.SetRequestUri(URL);
-        HttpRequestMessage.Method := 'PATCH';
-
-        if not HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
-            Error(ErrorCallFailedLbl);
-
-        if not HttpResponseMessage.IsSuccessStatusCode then
-            Error(ErrorWSLbl, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase);
     end;
 
     local procedure Post(URL: Text; JsonText: Text)
@@ -144,19 +73,6 @@ codeunit 60251 "Sent Lines Mgmt Cust"
             Error(ErrorWSLbl, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase);
     end;
 
-    local procedure SalesHeaderToJsonText(SalesHeaderNo: Code[20]): Text
-    var
-        JsonObject: JsonObject;
-        JsonText: Text;
-        Item: Record Item;
-    begin
-        JsonObject.Add('no', SalesHeaderNo);
-        JsonObject.Add('customerName', Database.CompanyName);
-        JsonObject.Add('documentStatus', '0');
-        JsonObject.WriteTo(JsonText);
-        exit(JsonText);
-    end;
-
     local procedure SalesLineToJsonText(SalesLine: Record "Sales Line"): Text
     var
         JsonObject: JsonObject;
@@ -176,49 +92,22 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         exit(JsonText);
     end;
 
-    local procedure GetSentHeadersBaseUrl(): Text
+    local procedure GetUrl(): Text
     var
         ExclusiveVendor: Record "Exclusive Vendor";
-        ErrorNoUrlLbl: Label 'Web service URL for sent headers needs to be set up first.';
+        ErrorNoUrlLbl: Label 'Web Service URL has not been set up.';
     begin
         if ExclusiveVendor.Get() then begin
-            if ExclusiveVendor."Headers Web Service" = '' then
+            if ExclusiveVendor."Vendor Web Service" = '' then
                 Error(ErrorNoUrlLbl);
-            exit(ExclusiveVendor."Headers Web Service");
-        end;
-    end;
-
-    local procedure GetSentLinesBaseUrl(): Text
-    var
-        ExclusiveVendor: Record "Exclusive Vendor";
-        ErrorNoUrlLbl: Label 'Web service URL for sent lines needs to be set up first.';
-    begin
-        if ExclusiveVendor.Get() then begin
-            if ExclusiveVendor."Lines Web Service" = '' then
-                Error(ErrorNoUrlLbl);
-            exit(ExclusiveVendor."Lines Web Service");
+            exit(ExclusiveVendor."Vendor Web Service");
         end;
     end;
 
     //Sacado de https://www.kauffmann.nl/2017/06/24/al-support-for-rest-web-services/
-    local procedure Get(URL: Text; var HttpResponseMessage: HttpResponseMessage): Text
-    var
-        HttpClient: HttpClient;
-        JsonText: Text;
-    begin
-        AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
-        if not HttpClient.Get(URL, HttpResponseMessage) then
-            Error(ErrorCallFailedLbl);
-
-        if not HttpResponseMessage.IsSuccessStatusCode then
-            Error(ErrorWSLbl, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase);
-
-        HttpResponseMessage.Content.ReadAs(JsonText);
-        exit(JsonText);
-    end;
-
     procedure PrepareLines(SalesHeaderNo: Code[20])
     var
+        HttpClient: HttpClient;
         HttpResponseMessage: HttpResponseMessage;
         JsonToken: JsonToken;
         JsonObject: JsonObject;
@@ -228,10 +117,18 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         LineNoText: Text;
         IsLineReady: Boolean;
         URL: Text;
+
+        ErrorInvalidResponseLbl: Label 'Invalid response, expected a JSON object as root object.';
     begin
+        AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
         //	/?$filter=documentNo eq '101012' and ready eq true
-        URL := GetSentLinesBaseUrl() + '/?$filter=documentNo eq ''' + SalesHeaderNo + '''';
-        Get(URL, HttpResponseMessage);
+        //	/?$filter=documentNo eq '%1' and ready eq %2
+        URL := GetUrl() + '/?$filter=documentNo eq ''' + SalesHeaderNo + '''';
+        if not HttpClient.Get(URL, HttpResponseMessage) then
+            Error(ErrorCallFailedLbl);
+
+        if not HttpResponseMessage.IsSuccessStatusCode then
+            Error(ErrorWSLbl, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase);
 
         HttpResponseMessage.Content.ReadAs(JsonText);
         if not JsonObject.ReadFrom(JsonText) then
@@ -254,7 +151,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
             LineNosFromOrderInWS.Add(GetJsonText(JsonObject, 'lineNo'));
         end;
 
-        //Se borran del pedido todas las que no están en LineNosFromOrderInWS
+        //Se borran todas las que no están en LineNosFromOrderInWS
         DeleteMissingSentLines(SalesHeaderNo, LineNosFromOrderInWS);
 
         //Eliminar las líneas que ya se han procesado del web service
@@ -364,10 +261,18 @@ codeunit 60251 "Sent Lines Mgmt Cust"
 
     procedure RemoveLineFromWS(id: Text)
     var
+        HttpClient: HttpClient;
+        HttpResponseMessage: HttpResponseMessage;
         URL: Text;
     begin
-        URL := GetSentLinesBaseUrl() + '(' + id + ')';
-        Delete(URL);
+        URL := GetUrl() + '(' + id + ')';
+        AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
+
+        if not HttpClient.Delete(URL, HttpResponseMessage) then
+            Error(ErrorCallFailedLbl);
+
+        if not HttpResponseMessage.IsSuccessStatusCode then
+            Error(ErrorWSLbl, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase);
     end;
 
     procedure AddHttpBasicAuthHeader(UserName: Text[50]; Password: Text[50]; var HttpClient: HttpClient);
@@ -381,7 +286,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         HttpClient.DefaultRequestHeaders().Add('Authorization', AuthString);
     end;
 
-    procedure GetSentLineWebServiceId(SalesHeaderNo: Code[20]; LineNo: Integer): Text
+    procedure GetLineId(SalesHeaderNo: Code[20]; LineNo: Integer): Text
     var
         HttpClient: HttpClient;
         HttpResponseMessage: HttpResponseMessage;
@@ -391,9 +296,15 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         JsonText: Text;
         URL: Text;
         SentLineId: Text[50];
+        ErrorInvalidResponseLbl: Label 'Invalid response, expected a JSON object as root object.';
     begin
-        URL := GetSentLinesBaseUrl() + '/?$filter=documentNo eq ''' + SalesHeaderNo + ''' and lineNo eq ' + Format(LineNo);
-        Get(URL, HttpResponseMessage);
+        AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
+        URL := GetUrl() + '/?$filter=documentNo eq ''' + SalesHeaderNo + ''' and lineNo eq ' + Format(LineNo);
+        if not HttpClient.Get(URL, HttpResponseMessage) then
+            Error(ErrorCallFailedLbl);
+
+        if not HttpResponseMessage.IsSuccessStatusCode then
+            Error(ErrorWSLbl, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase);
 
         HttpResponseMessage.Content.ReadAs(JsonText);
         if not JsonObject.ReadFrom(JsonText) then
@@ -409,72 +320,44 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         end;
     end;
 
-    procedure GetSentHeaderWebServiceId(SalesHeaderNo: Code[20]): Text
-    var
-        HttpClient: HttpClient;
-        HttpResponseMessage: HttpResponseMessage;
-        JsonToken: JsonToken;
-        JsonObject: JsonObject;
-        JsonArray: JsonArray;
-        JsonText: Text;
-        URL: Text;
-        SentHeaderId: Text[50];
-    begin
-        URL := GetSentHeadersBaseUrl() + '/?$filter=no eq ''' + SalesHeaderNo + '''';
-        Get(URL, HttpResponseMessage);
-
-        HttpResponseMessage.Content.ReadAs(JsonText);
-        if not JsonObject.ReadFrom(JsonText) then
-            Error(ErrorInvalidResponseLbl);
-
-        JsonObject.Get('value', JsonToken);
-        JsonArray := JsonToken.AsArray();
-
-        if JsonArray.Get(0, JsonToken) then begin
-            JsonObject := JsonToken.AsObject();
-            SentHeaderId := GetJsonText(JsonObject, 'id');
-            exit(SentHeaderId);
-        end;
-    end;
-
     var
         Username: Text;
         Password: Text;
         ErrorCallFailedLbl: Label 'The call to the web service failed.';
         ErrorWSLbl: Label 'The web service returned an error message:\\Status Code: %1\Description: %2';
-        ErrorInvalidResponseLbl: Label 'Invalid response, expected a JSON object as root object.';
+} */
 
-    /*
+/*
 
-    Estados cliente:
-        - pendiente (nuevas líneas sin informar, o si modifico una línea después de haber informado)
-        - enviada (cuando se informa)
-        - preparada (si es una línea modificada o añadida por el proveedor)
+Estados cliente:
+    - pendiente (nuevas líneas sin informar, o si modifico una línea después de haber informado)
+    - enviada (cuando se informa)
+    - preparada (si es una línea modificada o añadida por el proveedor)
 
-    Si el cliente modifica una línea que había sido informada: eliminar línea del web service (se tendrá que volver a informar).
-    Si el proveedor crea nuevas líneas: deja el line no en blanco y pone su No. del ítem como Vendor Item No.
+Si el cliente modifica una línea que había sido informada: eliminar línea del web service (se tendrá que volver a informar).
+Si el proveedor crea nuevas líneas: deja el line no en blanco y pone su No. del ítem como Vendor Item No.
 
-    Estados proveedor:
-        - sin estado (línea recién recibida)
-        - modificada (si cambio la cantidad de una línea)
-        - nueva (si creo una nueva línea)
-        - eliminada
+Estados proveedor:
+    - sin estado (línea recién recibida)
+    - modificada (si cambio la cantidad de una línea)
+    - nueva (si creo una nueva línea)
+    - eliminada
 
-    El proveedor tiene acción Finalizar para marcar líneas como preparadas (campo "ready" booleano).
-    Cuando se finaliza el pedido se aplican los cambios al WS.
+El proveedor tiene acción Finalizar para marcar líneas como preparadas (campo "ready" booleano).
+Cuando se finaliza el pedido se aplican los cambios al WS.
 
-    Consultar web service:
-    Por cada JSON object (línea de pedido) se hace get de la línea equivalente. Si se encuentra y hay cambios, se aplican.
-    Si hay líneas que no se encuentran, se eliminan del pedido.
-    Si hay líneas con el line no vacío, se insertan porque significa que son nuevas líneas.
+Consultar web service:
+Por cada JSON object (línea de pedido) se hace get de la línea equivalente. Si se encuentra y hay cambios, se aplican.
+Si hay líneas que no se encuentran, se eliminan del pedido.
+Si hay líneas con el line no vacío, se insertan porque significa que son nuevas líneas.
 
-    El cliente solo puede consultar las líneas que el proveedor ha marcado como preparadas.
+El cliente solo puede consultar las líneas que el proveedor ha marcado como preparadas.
 
-    Si el estado de la línea es enviado, no se permite enviar otra vez.
-    Si la línea se modifica y pasa de enviada a preparada, se elimina del WS.
+Si el estado de la línea es enviado, no se permite enviar otra vez.
+Si la línea se modifica y pasa de enviada a preparada, se elimina del WS.
 
-    *Extender subform para que se vea el estado de cada línea
-    *Revisar InsertSalesLineFromJsonObject. Si el vendor item no es de otro proveedor qué
-    *Las sent lines insertadas por el proveedor tienen el documentNo vacío por lo que el cliente no las recibe.
-    */
-}
+*Extender subform para que se vea el estado de cada línea
+*Revisar InsertSalesLineFromJsonObject. Si el vendor item no es de otro proveedor qué
+*Las sent lines insertadas por el proveedor tienen el documentNo vacío por lo que el cliente no las recibe.
+*/
+

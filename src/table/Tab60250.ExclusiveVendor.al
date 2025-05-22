@@ -25,7 +25,11 @@ table 60250 "Exclusive Vendor"
         {
             DataClassification = CustomerContent;
         }
-        field(4; "Vendor Web Service"; Text[100])
+        field(4; "Headers Web Service"; Text[100])
+        {
+            DataClassification = CustomerContent;
+        }
+        field(5; "Lines Web Service"; Text[100])
         {
             DataClassification = CustomerContent;
         }

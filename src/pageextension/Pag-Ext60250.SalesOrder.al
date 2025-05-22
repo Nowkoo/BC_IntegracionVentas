@@ -14,6 +14,7 @@ pageextension 60250 "Sales Order" extends "Sales Order"
                 SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
             begin
                 SentLinesMgmt.CheckIfPostIsAllowed(Rec."No.", Rec."Is From Exclusive Vendor");
+                SentLinesMgmt.ChangeDocumentStatus(Rec."No.");
             end;
         }
 
