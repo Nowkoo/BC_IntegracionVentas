@@ -4,7 +4,7 @@ codeunit 60250 "Vendor Exclusivity Mgmt"
     var
         SalesLine: Record "Sales Line";
         Item: Record "Item";
-        VendorSettings: Record "Exclusive Vendor";
+        PurchasesSetup: Record "Purchases & Payables Setup";
 
         ExclusiveVendorNo: Code[20];
         CurrentVendorNo: Code[20];
@@ -15,8 +15,9 @@ codeunit 60250 "Vendor Exclusivity Mgmt"
         ErrorLbl: Label 'Items acquired from vendor %1 cannot be purchased together with items acquired from other vendors.';
         ExclusiveVendorName: Text;
     begin
-        if VendorSettings.Get() then
-            ExclusiveVendorNo := VendorSettings."Vendor No";
+        //***
+        if PurchasesSetup.Get() then
+            ExclusiveVendorNo := PurchasesSetup."Vendor No.";
 
         if Item.Get(ItemNo) then
             CurrentVendorNo := Item."Vendor No.";
@@ -34,7 +35,7 @@ codeunit 60250 "Vendor Exclusivity Mgmt"
         end;
 
         if not AllowInsert then
-            Error(ErrorLbl, VendorSettings."Vendor Name");
+            Error(ErrorLbl, PurchasesSetup."Vendor Name");
     end;
 
     local procedure IsTheUniqueVendorInOrder(ExclusiveVendorNo: Code[20]; DocumentNo: Code[20]): Boolean
@@ -75,12 +76,13 @@ codeunit 60250 "Vendor Exclusivity Mgmt"
     var
         SalesHeader: Record "Sales Header";
         Item: Record Item;
-        ExclusiveVendor: Record "Exclusive Vendor";
+        PurchasesSetup: Record "Purchases & Payables Setup";
         IsFromExclusiveVendor: Boolean;
     begin
-        if SalesHeader.Get(SalesHeader."Document Type"::Order, DocumentNo) and ExclusiveVendor.Get() then begin
+        //***
+        if SalesHeader.Get(SalesHeader."Document Type"::Order, DocumentNo) and PurchasesSetup.Get() then begin
             Item.Get(ItemNo);
-            IsFromExclusiveVendor := ExclusiveVendor."Vendor No" = Item."Vendor No.";
+            IsFromExclusiveVendor := PurchasesSetup."Vendor No." = Item."Vendor No.";
 
             if SalesHeader."Is From Exclusive Vendor" <> IsFromExclusiveVendor then begin
                 SalesHeader."Is From Exclusive Vendor" := IsFromExclusiveVendor;

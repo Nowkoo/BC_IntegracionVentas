@@ -1,12 +1,31 @@
 //https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/webservices/web-services-authentication
 codeunit 60251 "Sent Lines Mgmt Cust"
 {
+    trigger OnRun()
+    var
+        SalesHeader: Record "Sales Header";
+        PurchasesSetup: Record "Purchases & Payables Setup";
+    begin
+        PurchasesSetup.Get();
+        if (PurchasesSetup."Vendor No." = '') or (PurchasesSetup."Customer No." = '') then
+            Error(ErrorNotConfiguredLbl);
+        SalesHeader.SetRange("Is From Exclusive Vendor", true);
+        SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Order);
+        if SalesHeader.FindSet() then
+            repeat
+                PrepareLines(SalesHeader);
+                Inform(SalesHeader);
+            until SalesHeader.Next() = 0;
+    end;
+
     procedure CheckIfPostIsAllowed(SalesHeaderNo: Code[20]; IsFromExclusiveVendor: Boolean)
     var
-        ExclusiveVendor: Record "Exclusive Vendor";
+        PurchasesSetup: Record "Purchases & Payables Setup";
         ErrorNotReadyLbl: Label 'All the sales lines from this order need to be ready before posting.';
     begin
-        if ExclusiveVendor.Get() then begin
+        //***
+        PurchasesSetup.Get();
+        if PurchasesSetup."Vendor No." <> '' then begin
             if IsFromExclusiveVendor and not IsOrderReady(SalesHeaderNo) then
                 Error(ErrorNotReadyLbl);
         end;
@@ -27,35 +46,63 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         exit(true);
     end;
 
-    procedure Inform(SalesHeaderNo: Code[20])
+    procedure Inform(SalesHeader: Record "Sales Header")
     var
         SalesLine: Record "Sales Line";
+        Item: Record Item;
+        PurchasesSetup: Record "Purchases & Payables Setup";
         JsonText: Text;
         Url: Text;
         JsonObject: JsonObject;
+        UnconfiguredItemsNos: List of [Text];
+        VendorItemNoNeededLbl: Label 'Some items in the order do not have Vendor Item No. configured. Sales lines containing these items could not be sent.';
     begin
+        PurchasesSetup.Get();
+        if (PurchasesSetup."Vendor No." = '') or (PurchasesSetup."Customer No." = '') then
+            Error(ErrorNotConfiguredLbl);
+
         //Post del header
-        if GetSentHeaderWebServiceId(SalesHeaderNo) = '' then begin
-            JsonText := SalesHeaderToJsonText(SalesHeaderNo);
+        if GetSentHeaderWebServiceId(SalesHeader."No.") = '' then begin
+            JsonText := SalesHeaderToJsonText(SalesHeader."No.");
             Url := GetSentHeadersBaseUrl();
             Post(Url, JsonText);
         end;
 
         //Post de las líneas
-        SalesLine.SetRange("Document No.", SalesHeaderNo);
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
         SalesLine.SetRange(Type, SalesLine.Type::Item);
         if SalesLine.FindSet() then
             repeat
-                if SalesLine.Status = SalesLine.Status::Pending then begin
-                    JsonText := SalesLineToJsonText(SalesLine);
-                    Url := GetSentLinesBaseUrl();
-                    Post(Url, JsonText);
+                if Item.Get(SalesLine."No.") and (Item."Vendor Item No." = '') then begin
+                    if not UnconfiguredItemsNos.Contains(Item."No.") then
+                        UnconfiguredItemsNos.Add(Item."No.");
+                end
+                else begin
+                    if SalesLine.Status = SalesLine.Status::Pending then begin
+                        JsonText := SalesLineToJsonText(SalesLine);
+                        Url := GetSentLinesBaseUrl();
+                        Post(Url, JsonText);
 
-                    SalesLine.Status := Status::Sent;
-                    SalesLine.Modify();
+                        SalesLine.Status := Status::Sent;
+                        SalesLine.Modify();
+                    end;
                 end;
             until SalesLine.Next() = 0;
+
+        if UnconfiguredItemsNos.Count <> 0 then begin
+            Message(VendorItemNoNeededLbl);
+            //Se podrían mostrar una lista filtrada de los items en cuestión
+        end;
+
+        SalesHeader.Modify();
+    end;
+
+    local procedure HasVendorNo(ItemNo: Code[20])
+    var
+        Item: Record Item;
+    begin
+
     end;
 
     procedure RemoveHeaderFromWS(SalesHeaderNo: Code[20])
@@ -75,7 +122,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         HttpClient: HttpClient;
         HttpResponseMessage: HttpResponseMessage;
     begin
-        AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
+        AddHttpBasicAuthHeader(HttpClient);
 
         if not HttpClient.Delete(URL, HttpResponseMessage) then
             Error(ErrorCallFailedLbl);
@@ -89,10 +136,16 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         Url: Text;
         JsonText: Text;
         JsonObject: JsonObject;
+        SystemId: Text;
+        Etag: Text;
     begin
-        JsonObject.Add('documentStatus', 1);
+        SystemId := GetSentHeaderWebServiceId(SalesHeaderNo);
+        JsonObject.Add('documentStatus', '1');
         JsonObject.WriteTo(JsonText);
-        URL := GetSentHeadersBaseUrl() + '(' + SalesHeaderNo + ')';
+        URL := GetSentHeadersBaseUrl() + '(' + SystemId + ')';
+        Message(SalesHeaderNo);
+        Message(URL);
+        Message(Etag);
         Patch(Url, JsonText);
     end;
 
@@ -104,11 +157,12 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         HttpContentHeaders: HttpHeaders;
         HttpClient: HttpClient;
     begin
-        AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
+        AddHttpBasicAuthHeader(HttpClient);
         HttpContent.WriteFrom(JsonText);
         HttpContent.GetHeaders(HttpContentHeaders);
         HttpContentHeaders.Remove('Content-Type');
         HttpContentHeaders.Add('Content-Type', 'application/json');
+        HttpContentHeaders.Add('If-Match', '*');
         HttpRequestMessage.Content := HttpContent;
         HttpRequestMessage.SetRequestUri(URL);
         HttpRequestMessage.Method := 'PATCH';
@@ -128,7 +182,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         HttpContentHeaders: HttpHeaders;
         HttpClient: HttpClient;
     begin
-        AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
+        AddHttpBasicAuthHeader(HttpClient);
         HttpContent.WriteFrom(JsonText);
         HttpContent.GetHeaders(HttpContentHeaders);
         HttpContentHeaders.Remove('Content-Type');
@@ -149,10 +203,12 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         JsonObject: JsonObject;
         JsonText: Text;
         Item: Record Item;
+        PurchasesSetup: Record "Purchases & Payables Setup";
     begin
+        PurchasesSetup.Get();
         JsonObject.Add('no', SalesHeaderNo);
-        JsonObject.Add('customerName', Database.CompanyName);
         JsonObject.Add('documentStatus', '0');
+        JsonObject.Add('customerNo', PurchasesSetup."Customer No.");
         JsonObject.WriteTo(JsonText);
         exit(JsonText);
     end;
@@ -162,7 +218,9 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         JsonObject: JsonObject;
         JsonText: Text;
         Item: Record Item;
+        PurchasesSetup: Record "Purchases & Payables Setup";
     begin
+        PurchasesSetup.Get();
         if not Item.Get(SalesLine."No.") then
             exit;
         JsonObject.Add('documentNo', SalesLine."Document No.");
@@ -172,31 +230,39 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         JsonObject.Add('quantity', SalesLine.Quantity);
         JsonObject.Add('vendorItemNo', Item."Vendor Item No.");
         JsonObject.Add('ready', false);
+        //JsonObject.Add('vendorLineNo', 0);
+        JsonObject.Add('new', false);
+        JsonObject.Add('customerNo', PurchasesSetup."Customer No.");
+
         JsonObject.WriteTo(JsonText);
         exit(JsonText);
     end;
 
     local procedure GetSentHeadersBaseUrl(): Text
     var
-        ExclusiveVendor: Record "Exclusive Vendor";
+        PurchasesSetup: Record "Purchases & Payables Setup";
         ErrorNoUrlLbl: Label 'Web service URL for sent headers needs to be set up first.';
     begin
-        if ExclusiveVendor.Get() then begin
-            if ExclusiveVendor."Headers Web Service" = '' then
+        //***
+        PurchasesSetup.Get();
+        if PurchasesSetup."Vendor No." <> '' then begin
+            if PurchasesSetup."Headers Web Service" = '' then
                 Error(ErrorNoUrlLbl);
-            exit(ExclusiveVendor."Headers Web Service");
+            exit(PurchasesSetup."Headers Web Service");
         end;
     end;
 
     local procedure GetSentLinesBaseUrl(): Text
     var
-        ExclusiveVendor: Record "Exclusive Vendor";
+        PurchasesSetup: Record "Purchases & Payables Setup";
         ErrorNoUrlLbl: Label 'Web service URL for sent lines needs to be set up first.';
     begin
-        if ExclusiveVendor.Get() then begin
-            if ExclusiveVendor."Lines Web Service" = '' then
+        //***
+        PurchasesSetup.Get();
+        if PurchasesSetup."Vendor No." <> '' then begin
+            if PurchasesSetup."Lines Web Service" = '' then
                 Error(ErrorNoUrlLbl);
-            exit(ExclusiveVendor."Lines Web Service");
+            exit(PurchasesSetup."Lines Web Service");
         end;
     end;
 
@@ -206,7 +272,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         HttpClient: HttpClient;
         JsonText: Text;
     begin
-        AddHttpBasicAuthHeader('admin', 'P@ssword01', HttpClient);
+        AddHttpBasicAuthHeader(HttpClient);
         if not HttpClient.Get(URL, HttpResponseMessage) then
             Error(ErrorCallFailedLbl);
 
@@ -217,7 +283,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         exit(JsonText);
     end;
 
-    procedure PrepareLines(SalesHeaderNo: Code[20])
+    procedure PrepareLines(SalesHeader: Record "Sales Header")
     var
         HttpResponseMessage: HttpResponseMessage;
         JsonToken: JsonToken;
@@ -227,10 +293,17 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         LineNosFromOrderInWS: List of [Text];
         LineNoText: Text;
         IsLineReady: Boolean;
+        IsLineNew: Boolean;
         URL: Text;
+        SalesLine: Record "Sales Line";
+        PurchasesSetup: Record "Purchases & Payables Setup";
     begin
+        PurchasesSetup.Get();
+        if (PurchasesSetup."Vendor No." = '') or (PurchasesSetup."Customer No." = '') then
+            Error(ErrorNotConfiguredLbl);
+
         //	/?$filter=documentNo eq '101012' and ready eq true
-        URL := GetSentLinesBaseUrl() + '/?$filter=documentNo eq ''' + SalesHeaderNo + '''';
+        URL := GetSentLinesBaseUrl() + '/?$filter=documentNo eq ''' + SalesHeader."No." + ''' and customerNo eq ''' + PurchasesSetup."Customer No." + '''';
         Get(URL, HttpResponseMessage);
 
         HttpResponseMessage.Content.ReadAs(JsonText);
@@ -244,9 +317,10 @@ codeunit 60251 "Sent Lines Mgmt Cust"
             Evaluate(IsLineReady, GetJsonText(JsonObject, 'ready'));
 
             if IsLineReady then begin
-                //Si lineNo está vacío es una nueva línea creada por el proveedor
-                if GetJsonText(JsonObject, 'lineNo') = '0' then
+                Evaluate(IsLineNew, GetJsonText(JsonObject, 'new'));
+                if IsLineNew then begin
                     InsertSalesLineFromJsonObject(JsonObject)
+                end
                 else begin
                     UpdateSalesLineFromJsonObject(JsonObject);
                 end;
@@ -255,14 +329,23 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         end;
 
         //Se borran del pedido todas las que no están en LineNosFromOrderInWS
-        DeleteMissingSentLines(SalesHeaderNo, LineNosFromOrderInWS);
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+        SalesLine.SetRange(Type, SalesLine.Type::Item);
+        if SalesLine.FindSet() then
+            repeat
+                if (SalesLine.Status = SalesLine.Status::Sent) and not LineNosFromOrderInWS.Contains(Format(SalesLine."Line No.")) then
+                    SalesLine.Delete();
+            until SalesLine.Next() = 0;
 
         //Eliminar las líneas que ya se han procesado del web service
         foreach JsonToken in JsonArray do begin
             JsonObject := JsonToken.AsObject();
             Evaluate(IsLineReady, GetJsonText(JsonObject, 'ready'));
-            if IsLineReady then
-                RemoveLineFromWS(GetJsonText(JsonObject, 'id'));
+            if IsLineReady then begin
+                URL := GetSentLinesBaseUrl() + '(' + GetJsonText(JsonObject, 'id') + ')';
+                Delete(URL);
+            end;
         end;
     end;
 
@@ -294,7 +377,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
     local procedure InsertSalesLineFromJsonObject(JsonObject: JsonObject)
     var
         SalesLine: Record "Sales Line";
-        ExclusiveVendor: Record "Exclusive Vendor";
+        PurchasesSetup: Record "Purchases & Payables Setup";
         Item: Record Item;
         Quantity: Decimal;
         CreateItemLbl: Label 'Vendor %1 has added a line with the next item: %2. There is no registry for this item, do you want to create one? Otherwise the line will be ignored.';
@@ -302,20 +385,29 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         Item.SetRange("Vendor Item No.", GetJsonText(JsonObject, 'vendorItemNo'));
         Item.SetRange(Type, Item.Type::Inventory);
         if not Item.FindFirst() then begin
-            ExclusiveVendor.Get();
-            if not Dialog.Confirm(CreateItemLbl, true, ExclusiveVendor."Vendor Name", GetJsonText(JsonObject, 'description')) then
+            //***
+            PurchasesSetup.Get();
+            if not Dialog.Confirm(CreateItemLbl, true, PurchasesSetup."Vendor Name", GetJsonText(JsonObject, 'description')) then
                 exit;
             Item.Reset();
-            InsertItem(Item, ExclusiveVendor."Vendor No", GetJsonText(JsonObject, 'vendorItemNo'), GetJsonText(JsonObject, 'description'));
+            InsertItem(Item, PurchasesSetup."Vendor No.", GetJsonText(JsonObject, 'vendorItemNo'), GetJsonText(JsonObject, 'description'));
         end;
 
         Evaluate(Quantity, GetJsonText(JsonObject, 'quantity'));
-        InsertSalesLine(Item."No.", GetJsonText(JsonObject, 'documentNo'), Quantity);
+        InsertSalesLine(Item, GetJsonText(JsonObject, 'documentNo'), Quantity);
     end;
 
-    local procedure InsertItem(var Item: Record Item; VendorNo: Code[20]; VendorItemNo: Code[20]; Description: Code[20])
+    //mercadería hardcoded?
+    local procedure InsertItem(var Item: Record Item; VendorNo: Code[20]; VendorItemNo: Code[20]; Description: Text[100])
+    var
+        NoSeries: Codeunit "No. Series";
+        InventorySetup: Record "Inventory Setup";
     begin
+        InventorySetup.Get();
+        Item."No." := NoSeries.GetNextNo(InventorySetup."Item Nos.");
         Item."Vendor No." := VendorNo;
+        Item."Gen. Prod. Posting Group" := 'MERCADERÍA';
+        Item."Inventory Posting Group" := 'MERCADERÍA';
         Item.Type := Item.Type::Inventory;
         Item."Vendor Item No." := VendorItemNo;
         Item.Description := Description;
@@ -323,61 +415,92 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         Item.Insert();
     end;
 
-    local procedure InsertSalesLine(ItemNo: Code[20]; SalesHeaderNo: Code[20]; Quantity: Decimal)
+    local procedure InsertSalesLine(Item: Record Item; SalesHeaderNo: Code[20]; Quantity: Decimal)
     var
         LastLine: Record "Sales Line";
         SalesLine: Record "Sales Line";
         SalesHeader: Record "Sales Header";
     begin
         SalesHeader.Get(SalesHeader."Document Type"::Order, SalesHeaderNo);
-        if LastLine.FindLast() then begin
-            SalesLine.AddItem(LastLine, ItemNo);
+        LastLine.SetRange("Document No.", SalesHeaderNo);
+        LastLine.SetRange("Document Type", SalesHeader."Document Type"::Order);
 
-            //Buscamos la línea que acabamos de insertar
-            SalesLine.Reset();
-            SalesLine.SetRange("Document No.", SalesHeader."No.");
-            SalesLine.SetRange("Document Type", SalesHeader."Document Type"::Order);
-            SalesLine.FindLast();
-        end
-        else
-            SalesLine.AddItem(SalesLine, ItemNo);
+        if LastLine.FindLast() then
+            SalesLine."Line No." := LastLine."Line No." + 10000;
 
+        SalesLine.Init();
+        SalesLine."Document No." := SalesHeaderNo;
+        SalesLine."Document Type" := SalesLine."Document Type"::Order;
+        SalesLine.Type := SalesLine.Type::Item;
+        SalesLine.SetSalesHeader(SalesHeader);
+        SalesLine."Unit of Measure Code" := Item."Base Unit of Measure";
+        SalesLine."No." := Item."No.";
+        SalesLine.Description := Item.Description;
         SalesLine.Status := Status::Ready;
         SalesLine.Validate(Quantity, Quantity);
-        SalesLine.Modify();
+        SalesLine.Insert();
     end;
 
     local procedure UpdateSalesLineFromJsonObject(JsonObject: JsonObject)
     var
         SalesLine: Record "Sales Line";
+        Item: Record Item;
+        PurchasesSetup: Record "Purchases & Payables Setup";
         NewQuantity: Decimal;
     begin
         if SalesLine.Get(SalesLine."Document Type"::Order, GetJsonText(JsonObject, 'documentNo'), GetJsonText(JsonObject, 'lineNo')) then begin
             Evaluate(NewQuantity, GetJsonText(JsonObject, 'quantity'));
-            if SalesLine.Quantity <> NewQuantity then begin
+            if SalesLine.Quantity <> NewQuantity then
                 SalesLine.Quantity := NewQuantity;
+
+            Item.Get(SalesLine."No.");
+            if Item."Vendor Item No." <> GetJsonText(JsonObject, 'vendorItemNo') then begin
+                Item.Reset();
+                Item.SetRange("Vendor Item No.", GetJsonText(JsonObject, 'vendorItemNo'));
+                //Item.SetRange(Type, Item.Type::Inventory);
+                //***
+                PurchasesSetup.Get();
+                if Item.FindFirst() and (Item."Vendor No." = PurchasesSetup."Vendor No.") then begin
+                    SalesLine."No." := Item."No.";
+                    SalesLine.Description := Item.Description;
+                end
+                else begin
+                    Item.Reset();
+                    InsertItem(Item, PurchasesSetup."Vendor No.", GetJsonText(JsonObject, 'vendorItemNo'), GetJsonText(JsonObject, 'description'));
+                    SalesLine."No." := Item."No.";
+                end;
             end;
+            SalesLine.Status := Status::Ready;
+            SalesLine.Modify();
         end;
-        SalesLine.Status := Status::Ready;
-        SalesLine.Modify();
     end;
 
-    procedure RemoveLineFromWS(id: Text)
+    procedure RemoveLineFromWS(SalesHeaderNo: Code[20]; LineNo: Integer)
     var
         URL: Text;
+        WebServiceId: Text;
     begin
-        URL := GetSentLinesBaseUrl() + '(' + id + ')';
-        Delete(URL);
+        WebServiceId := GetSentLineWebServiceId(SalesHeaderNo, LineNo);
+        if WebServiceId = '' then
+            exit;
+        URL := GetSentLinesBaseUrl() + '(' + WebServiceId + ')';
+        Delete(Url);
     end;
 
-    procedure AddHttpBasicAuthHeader(UserName: Text[50]; Password: Text[50]; var HttpClient: HttpClient);
+    procedure AddHttpBasicAuthHeader(var HttpClient: HttpClient);
     var
-        AuthString: Text;
+        AuthString: SecretText;
         Base64Convert: Codeunit "Base64 Convert";
+        PurchasesSetup: Record "Purchases & Payables Setup";
+        UserName: SecretText;
+        Password: SecretText;
     begin
-        AuthString := STRSUBSTNO('%1:%2', UserName, Password);
+        PurchasesSetup.Get();
+        UserName := PurchasesSetup.GetUsername(PurchasesSetup."WS Username");
+        Password := PurchasesSetup.GetPassword(PurchasesSetup."WS Password");
+        AuthString := SecretStrSubstNo('%1:%2', UserName, Password);
         AuthString := Base64Convert.ToBase64(AuthString);
-        AuthString := STRSUBSTNO('Basic %1', AuthString);
+        AuthString := SecretStrSubstNo('Basic %1', AuthString);
         HttpClient.DefaultRequestHeaders().Add('Authorization', AuthString);
     end;
 
@@ -391,8 +514,10 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         JsonText: Text;
         URL: Text;
         SentLineId: Text[50];
+        PurchasesSetup: Record "Purchases & Payables Setup";
     begin
-        URL := GetSentLinesBaseUrl() + '/?$filter=documentNo eq ''' + SalesHeaderNo + ''' and lineNo eq ' + Format(LineNo);
+        PurchasesSetup.Get();
+        URL := GetSentLinesBaseUrl() + '/?$filter=documentNo eq ''' + SalesHeaderNo + ''' and lineNo eq ' + Format(LineNo) + ' and customerNo eq ''' + PurchasesSetup."Customer No." + '''';
         Get(URL, HttpResponseMessage);
 
         HttpResponseMessage.Content.ReadAs(JsonText);
@@ -419,8 +544,10 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         JsonText: Text;
         URL: Text;
         SentHeaderId: Text[50];
+        PurchasesSetup: Record "Purchases & Payables Setup";
     begin
-        URL := GetSentHeadersBaseUrl() + '/?$filter=no eq ''' + SalesHeaderNo + '''';
+        PurchasesSetup.Get();
+        URL := GetSentHeadersBaseUrl() + '/?$filter=no eq ''' + SalesHeaderNo + ''' and customerNo eq ''' + PurchasesSetup."Customer No." + '''';
         Get(URL, HttpResponseMessage);
 
         HttpResponseMessage.Content.ReadAs(JsonText);
@@ -437,44 +564,63 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         end;
     end;
 
+    procedure DeleteAll()
+    var
+        URL: Text;
+        PurchasesSetup: Record "Purchases & Payables Setup";
+        HttpResponseMessage: HttpResponseMessage;
+        JsonObject: JsonObject;
+        JsonToken: JsonToken;
+        JsonArray: JsonArray;
+        JsonText: Text;
+        LineNo: Integer;
+    begin
+        PurchasesSetup.Get();
+
+        //Borrar todas las líneas del cliente
+        URL := GetSentLinesBaseUrl() + '/?$filter=customerNo eq ''' + PurchasesSetup."Customer No." + '''';
+        Get(URL, HttpResponseMessage);
+
+        HttpResponseMessage.Content.ReadAs(JsonText);
+        if not JsonObject.ReadFrom(JsonText) then
+            Error(ErrorInvalidResponseLbl);
+
+        JsonObject.Get('value', JsonToken);
+        JsonArray := JsonToken.AsArray();
+        foreach JsonToken in JsonArray do begin
+            JsonObject := JsonToken.AsObject();
+            Evaluate(LineNo, GetJsonText(JsonObject, 'lineNo'));
+            RemoveLineFromWS(GetJsonText(JsonObject, 'documentNo'), LineNo);
+        end;
+
+        //Borrar todos los headers del cliente
+        URL := GetSentHeadersBaseUrl() + '/?$filter=customerNo eq ''' + PurchasesSetup."Customer No." + '''';
+        Get(URL, HttpResponseMessage);
+
+        HttpResponseMessage.Content.ReadAs(JsonText);
+        if not JsonObject.ReadFrom(JsonText) then
+            Error(ErrorInvalidResponseLbl);
+
+        JsonObject.Get('value', JsonToken);
+        JsonArray := JsonToken.AsArray();
+        foreach JsonToken in JsonArray do begin
+            JsonObject := JsonToken.AsObject();
+            RemoveHeaderFromWS(GetJsonText(JsonObject, 'no'));
+        end;
+    end;
+
     var
         Username: Text;
         Password: Text;
         ErrorCallFailedLbl: Label 'The call to the web service failed.';
         ErrorWSLbl: Label 'The web service returned an error message:\\Status Code: %1\Description: %2';
         ErrorInvalidResponseLbl: Label 'Invalid response, expected a JSON object as root object.';
+        ErrorNotConfiguredLbl: Label 'Vendor No. and Customer No. need to be configured first from page Purchases & Payables Setup.';
 
     /*
-
-    Estados cliente:
-        - pendiente (nuevas líneas sin informar, o si modifico una línea después de haber informado)
-        - enviada (cuando se informa)
-        - preparada (si es una línea modificada o añadida por el proveedor)
-
-    Si el cliente modifica una línea que había sido informada: eliminar línea del web service (se tendrá que volver a informar).
-    Si el proveedor crea nuevas líneas: deja el line no en blanco y pone su No. del ítem como Vendor Item No.
-
-    Estados proveedor:
-        - sin estado (línea recién recibida)
-        - modificada (si cambio la cantidad de una línea)
-        - nueva (si creo una nueva línea)
-        - eliminada
-
-    El proveedor tiene acción Finalizar para marcar líneas como preparadas (campo "ready" booleano).
-    Cuando se finaliza el pedido se aplican los cambios al WS.
-
-    Consultar web service:
-    Por cada JSON object (línea de pedido) se hace get de la línea equivalente. Si se encuentra y hay cambios, se aplican.
-    Si hay líneas que no se encuentran, se eliminan del pedido.
-    Si hay líneas con el line no vacío, se insertan porque significa que son nuevas líneas.
-
-    El cliente solo puede consultar las líneas que el proveedor ha marcado como preparadas.
-
-    Si el estado de la línea es enviado, no se permite enviar otra vez.
-    Si la línea se modifica y pasa de enviada a preparada, se elimina del WS.
-
-    *Extender subform para que se vea el estado de cada línea
-    *Revisar InsertSalesLineFromJsonObject. Si el vendor item no es de otro proveedor qué
-    *Las sent lines insertadas por el proveedor tienen el documentNo vacío por lo que el cliente no las recibe.
+    *Si se cambia el vendor y quedan restos en el ws del antiguo? cuándo se borran?
+    *patch no funciona, cuestión de permisos?: 'No se puede realizar la operación solicitada en este contexto.'.
+    *cliente configura manualmente su customer no para el proveedor. Postea con el customer no y prepara filtrando por customer no.
+    *El proveedor puede acceder a la ficha del cliente gracias al customer no
     */
 }

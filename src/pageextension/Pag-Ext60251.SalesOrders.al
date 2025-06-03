@@ -31,7 +31,7 @@ pageextension 60251 "Sales Orders" extends "Sales Order List"
                 var
                     SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
                 begin
-                    SentLinesMgmt.Inform(Rec."No.");
+                    SentLinesMgmt.Inform(Rec);
                 end;
             }
 
@@ -47,7 +47,7 @@ pageextension 60251 "Sales Orders" extends "Sales Order List"
                 var
                     SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
                 begin
-                    SentLinesMgmt.PrepareLines(Rec."No.");
+                    SentLinesMgmt.PrepareLines(Rec);
                 end;
             }
         }

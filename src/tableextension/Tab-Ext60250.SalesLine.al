@@ -16,26 +16,28 @@ tableextension 60250 "Sales Line" extends "Sales Line"
                 SalesLine: Record "Sales Line";
             begin
                 SalesLine.SetRange("Document No.", Rec."Document No.");
-                //Modificación de la primera línea
+
                 if SalesLine.FindSet() then begin
-                    if (SalesLine.Count = 1) and (xRec."No." <> '') then begin
-                        VendorExclusivityMgmt.UpdateOrderOwnership(Rec."Document No.", Rec."No.");
-                    end;
+                    //Modificación de la primera línea
+                    if (SalesLine.Count = 1) and (xRec."No." <> '') then
+                        VendorExclusivityMgmt.UpdateOrderOwnership(Rec."Document No.", Rec."No.")
+                    //Modificación/inserción de otras líneas
+                    else
+                        VendorExclusivityMgmt.CheckIfInsertIsAllowed(Rec."No.", Rec."Document No.");
                 end
                 else begin
                     //Inserción de la primera línea
                     if xRec."No." = '' then begin
-                        VendorExclusivityMgmt.CheckIfInsertIsAllowed(Rec."No.", Rec."Document No.");
                         VendorExclusivityMgmt.UpdateOrderOwnership(Rec."Document No.", Rec."No.");
-                    end
-                    else
-                        VendorExclusivityMgmt.CheckIfInsertIsAllowed(Rec."No.", Rec."Document No.");
+                    end;
                 end;
             end;
         }
     }
 
     trigger OnBeforeInsert()
+    var
+        SalesHeader: Record "Sales Header";
     begin
         Rec.Status := Status::Pending;
     end;
@@ -45,41 +47,52 @@ tableextension 60250 "Sales Line" extends "Sales Line"
         SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
         VendorExclusivityMgmt: Codeunit "Vendor Exclusivity Mgmt";
         SalesLine: Record "Sales Line";
+        SalesHeader: Record "Sales Header";
+        PurchasesSetup: Record "Purchases & Payables Setup";
         SentLineId: Text[50];
-
     begin
-        //Si no quedan líneas, el pedido no es de nadie
-        SalesLine.SetRange("Document No.", Rec."Document No.");
-        if not SalesLine.FindFirst() then
-            VendorExclusivityMgmt.RemoveOrderOwnership(rec."Document No.");
+        //Si se está eliminando el pedido, no es necesario actualizar la cabecera
+        if SalesHeader.Get(SalesHeader."Document Type"::Order, Rec."Document No.") and not SalesHeader.Deleting then begin
+            //Si no quedan líneas, el pedido no es de nadie
+            SalesLine.SetRange("Document No.", Rec."Document No.");
+            if not SalesLine.FindFirst() then
+                VendorExclusivityMgmt.RemoveOrderOwnership(rec."Document No.");
+        end;
 
         RemoveLineFromWS();
     end;
 
-    trigger OnAfterModify()
+    //se ejecuta dos veces
+    trigger OnBeforeModify()
     var
         SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
-        ExclusiveVendor: Record "Exclusive Vendor";
         SalesHeader: Record "Sales Header";
+        PurchasesSetup: Record "Purchases & Payables Setup";
         SentLineId: Text[50];
     begin
-        RemoveLineFromWS();
-        Rec.Status := Status::Pending;
-        Rec.Modify();
+        PurchasesSetup.Get();
+        if PurchasesSetup."Vendor No." <> '' then begin
+            RemoveLineFromWS();
+            Rec.Status := Status::Pending;
+        end;
     end;
 
     local procedure RemoveLineFromWS()
     var
         SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
-        ExclusiveVendor: Record "Exclusive Vendor";
         SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
         SentLineId: Text[50];
     begin
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+        SalesLine.SetRange("Document No.", Rec."Document No.");
         SalesHeader.Get(SalesHeader."Document Type"::Order, Rec."Document No.");
-        if SalesHeader."Is From Exclusive Vendor" and (Rec.Status = Status::Sent) then begin
-            SentLineId := SentLinesMgmt.GetSentLineWebServiceId(Rec."Document No.", Rec."Line No.");
-            if SentLineId <> '' then
-                SentLinesMgmt.RemoveLineFromWS(SentLineId);
+
+        if (xRec."No." <> '') and (xRec.Status = Status::Sent) then begin
+            if SalesLine.FindFirst() and not SalesHeader."Is From Exclusive Vendor" then
+                exit;
+
+            SentLinesMgmt.RemoveLineFromWS(Rec."Document No.", Rec."Line No.");
         end;
     end;
 }

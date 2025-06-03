@@ -6,14 +6,24 @@ tableextension 60251 "Sales Header" extends "Sales Header"
         {
             DataClassification = CustomerContent;
         }
+        field(304; "Deleting"; Boolean)
+        {
+            DataClassification = CustomerContent;
+        }
     }
 
-    trigger OnAfterDelete()
+    trigger OnBeforeDelete()
     var
         SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
-        ExclusiveVendor: Record "Exclusive Vendor";
+        PurchasesSetup: Record "Purchases & Payables Setup";
     begin
-        if ExclusiveVendor.Get() and Rec."Is From Exclusive Vendor" then
+        Rec.Deleting := true;
+        Modify();
+        //***
+        PurchasesSetup.Get();
+        if (PurchasesSetup."Vendor No." <> '') and Rec."Is From Exclusive Vendor" then
             SentLinesMgmt.RemoveHeaderFromWS(Rec."No.");
     end;
+
+
 }

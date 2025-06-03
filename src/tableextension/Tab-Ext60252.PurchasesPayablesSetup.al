@@ -1,114 +1,94 @@
-/* table 60250 "Exclusive Vendor"
+tableextension 60252 "Purchases & Payables Setup" extends "Purchases & Payables Setup"
 {
-    DataClassification = CustomerContent;
-
     fields
     {
-        field(1; "Key Field"; Code[20])
-        {
-            DataClassification = CustomerContent;
-            Editable = false;
-        }
-        field(2; "Vendor No"; Code[20])
+        field(354; "Vendor No."; Code[20])
         {
             DataClassification = CustomerContent;
 
             trigger OnValidate()
             var
                 Vendor: Record Vendor;
+                SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+                DeleteVendorDataLbl: Label 'If you change vendor all the data from the current vendor will be deleted from the web service. Are you sure you want to change vendor?';
             begin
-                if Vendor.Get(Rec."Vendor No") then
+                if (xRec."Vendor No." <> '') and Dialog.Confirm(DeleteVendorDataLbl) then begin
+                    SentLinesMgmt.DeleteAll();
+                end
+                else
+                    "Vendor No." := xRec."Vendor No.";
+
+                if Vendor.Get(Rec."Vendor No.") then
                     "Vendor Name" := Vendor.Name;
             end;
         }
-        field(3; "Vendor Name"; Text[100])
+
+        field(355; "Vendor Name"; Text[100])
         {
             DataClassification = CustomerContent;
         }
-        field(4; "Headers Web Service"; Text[100])
+        field(356; "Headers Web Service"; Text[100])
         {
             DataClassification = CustomerContent;
         }
-        field(5; "Lines Web Service"; Text[100])
+        field(357; "Lines Web Service"; Text[100])
         {
             DataClassification = CustomerContent;
         }
-        field(6; "WS Password"; Guid)
+
+        field(358; "WS Password"; Guid)
         {
             DataClassification = SystemMetadata;
         }
-        field(7; "WS Username"; Guid)
+        field(359; "WS Username"; Guid)
         {
             DataClassification = SystemMetadata;
         }
-    }
-
-    keys
-    {
-        key(Pk; "Key Field")
+        field(360; "Customer No."; Code[20])
         {
-            Clustered = true;
+            DataClassification = SystemMetadata;
         }
-    }
-
-    fieldgroups
-    {
-        // Add changes to field groups here
     }
 
     [NonDebuggable]
     procedure SetPassword(Password: SecretText)
+    var
+        ErrorPasswordNotSavedLbl: Label 'Password could not be saved.';
     begin
         if IsNullGuid(Rec."WS Password") then
             Rec."WS Password" := CreateGuid();
 
         if not IsolatedStorage.Set(Rec."WS Password", Password, DataScope::Company) then
-            Error('Password could not be saved.');
+            Error(ErrorPasswordNotSavedLbl);
     end;
 
     [NonDebuggable]
     procedure GetPassword(PasswordKey: Guid) Password: SecretText
+    var
+        ErrorPasswordNotRetrievedLbl: Label 'Password could not be retrieved.';
     begin
         if not IsolatedStorage.Get(Format(PasswordKey), DataScope::Company, Password) then
-            Error('Password could not be retrieved.');
+            Error(ErrorPasswordNotRetrievedLbl);
     end;
 
     [NonDebuggable]
     procedure SetUsername(Username: SecretText)
+    var
+        ErrorUsernameNotSavedLbl: Label 'Username could not be saved.';
     begin
         if IsNullGuid(Rec."WS Username") then
             Rec."WS Username" := CreateGuid();
 
         if not IsolatedStorage.Set(Rec."WS Username", Username, DataScope::Company) then
-            Error('Username could not be saved.');
+            Error(ErrorUsernameNotSavedLbl);
     end;
 
     [NonDebuggable]
     procedure GetUsername(UsernameKey: Guid) Username: SecretText
+    var
+        ErrorUsernameNotRetrievedLbl: Label 'Username could not be retrieved.';
     begin
         if not IsolatedStorage.Get(Format(UsernameKey), DataScope::Company, Username) then
-            Error('Username could not be retrieved.');
+            Error(ErrorUsernameNotRetrievedLbl);
     end;
-
-
-    trigger OnInsert()
-    begin
-
-    end;
-
-    trigger OnModify()
-    begin
-
-    end;
-
-    trigger OnDelete()
-    begin
-
-    end;
-
-    trigger OnRename()
-    begin
-
-    end;
-
-} */
+}
