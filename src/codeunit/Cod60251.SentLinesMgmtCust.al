@@ -135,21 +135,23 @@ codeunit 60251 "Sent Lines Mgmt Cust"
     var
         Url: Text;
         JsonText: Text;
-        JsonObject: JsonObject;
+        NewHeader: JsonObject;
+        OldHeader: JsonObject;
         SystemId: Text;
-        Etag: Text;
+        OdataEtag: Text;
     begin
-        SystemId := GetSentHeaderWebServiceId(SalesHeaderNo);
-        JsonObject.Add('documentStatus', '1');
-        JsonObject.WriteTo(JsonText);
+        OldHeader := GetSentHeader(SalesHeaderNo);
+        SystemId := GetJsonText(OldHeader, 'id');
+        OdataEtag := GetJsonText(OldHeader, '@odata.etag');
+
+        NewHeader.Add('documentStatus', '1');
+        NewHeader.WriteTo(JsonText);
         URL := GetSentHeadersBaseUrl() + '(' + SystemId + ')';
-        Message(SalesHeaderNo);
-        Message(URL);
-        Message(Etag);
-        Patch(Url, JsonText);
+
+        Patch(Url, JsonText, OdataEtag);
     end;
 
-    local procedure Patch(URL: Text; JsonText: Text)
+    local procedure Patch(URL: Text; JsonText: Text; OdataEtag: Text)
     var
         HttpRequestMessage: HttpRequestMessage;
         HttpResponseMessage: HttpResponseMessage;
@@ -162,7 +164,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         HttpContent.GetHeaders(HttpContentHeaders);
         HttpContentHeaders.Remove('Content-Type');
         HttpContentHeaders.Add('Content-Type', 'application/json');
-        HttpContentHeaders.Add('If-Match', '*');
+        HttpContentHeaders.Add('If-Match', OdataEtag);
         HttpRequestMessage.Content := HttpContent;
         HttpRequestMessage.SetRequestUri(URL);
         HttpRequestMessage.Method := 'PATCH';
@@ -564,6 +566,35 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         end;
     end;
 
+    procedure GetSentHeader(SalesHeaderNo: Code[20]): JsonObject
+    var
+        HttpClient: HttpClient;
+        HttpResponseMessage: HttpResponseMessage;
+        JsonToken: JsonToken;
+        JsonObject: JsonObject;
+        JsonArray: JsonArray;
+        JsonText: Text;
+        URL: Text;
+        SentHeaderId: Text[50];
+        PurchasesSetup: Record "Purchases & Payables Setup";
+    begin
+        PurchasesSetup.Get();
+        URL := GetSentHeadersBaseUrl() + '/?$filter=no eq ''' + SalesHeaderNo + ''' and customerNo eq ''' + PurchasesSetup."Customer No." + '''';
+        Get(URL, HttpResponseMessage);
+
+        HttpResponseMessage.Content.ReadAs(JsonText);
+        if not JsonObject.ReadFrom(JsonText) then
+            Error(ErrorInvalidResponseLbl);
+
+        JsonObject.Get('value', JsonToken);
+        JsonArray := JsonToken.AsArray();
+
+        if JsonArray.Get(0, JsonToken) then begin
+            JsonObject := JsonToken.AsObject();
+            exit(JsonObject);
+        end;
+    end;
+
     procedure DeleteAll()
     var
         URL: Text;
@@ -618,9 +649,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         ErrorNotConfiguredLbl: Label 'Vendor No. and Customer No. need to be configured first from page Purchases & Payables Setup.';
 
     /*
-    *Si se cambia el vendor y quedan restos en el ws del antiguo? cuándo se borran?
     *patch no funciona, cuestión de permisos?: 'No se puede realizar la operación solicitada en este contexto.'.
-    *cliente configura manualmente su customer no para el proveedor. Postea con el customer no y prepara filtrando por customer no.
-    *El proveedor puede acceder a la ficha del cliente gracias al customer no
+    *batch requests
     */
 }

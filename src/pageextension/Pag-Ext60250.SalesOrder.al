@@ -14,7 +14,7 @@ pageextension 60250 "Sales Order" extends "Sales Order"
                 SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
             begin
                 SentLinesMgmt.CheckIfPostIsAllowed(Rec."No.", Rec."Is From Exclusive Vendor");
-                //SentLinesMgmt.ChangeDocumentStatus(Rec."No.");
+                //SentLinesMgmt.ChangeDocumentStatus(Rec."No."); // no funciona
             end;
         }
 
@@ -54,4 +54,18 @@ pageextension 60250 "Sales Order" extends "Sales Order"
             }
         }
     }
+
+    trigger OnOpenPage()
+    var
+        VendorExclusivityMgmt: Codeunit "Vendor Exclusivity Mgmt";
+        SalesLine: Record "Sales Line";
+        Item: Record Item;
+        PurchasesSetup: Record "Purchases & Payables Setup";
+    begin
+        SalesLine.SetRange("Document No.", Rec."No.");
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+        if SalesLine.FindFirst() then begin
+            VendorExclusivityMgmt.UpdateOrderOwnership(Rec."No.", SalesLine."No.");
+        end;
+    end;
 }

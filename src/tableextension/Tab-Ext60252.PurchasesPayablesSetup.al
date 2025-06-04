@@ -12,11 +12,12 @@ tableextension 60252 "Purchases & Payables Setup" extends "Purchases & Payables 
                 SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
                 DeleteVendorDataLbl: Label 'If you change vendor all the data from the current vendor will be deleted from the web service. Are you sure you want to change vendor?';
             begin
-                if (xRec."Vendor No." <> '') and Dialog.Confirm(DeleteVendorDataLbl) then begin
-                    SentLinesMgmt.DeleteAll();
-                end
-                else
-                    "Vendor No." := xRec."Vendor No.";
+                if xRec."Vendor No." <> '' then begin
+                    if Dialog.Confirm(DeleteVendorDataLbl) then
+                        SentLinesMgmt.DeleteAll()
+                    else
+                        "Vendor No." := xRec."Vendor No.";
+                end;
 
                 if Vendor.Get(Rec."Vendor No.") then
                     "Vendor Name" := Vendor.Name;
