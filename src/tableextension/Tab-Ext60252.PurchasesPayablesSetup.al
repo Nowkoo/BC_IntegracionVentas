@@ -28,11 +28,11 @@ tableextension 60252 "Purchases & Payables Setup" extends "Purchases & Payables 
         {
             DataClassification = CustomerContent;
         }
-        field(356; "Headers Web Service"; Text[100])
+        field(356; "Headers Web Service"; Text[200])
         {
             DataClassification = CustomerContent;
         }
-        field(357; "Lines Web Service"; Text[100])
+        field(357; "Lines Web Service"; Text[200])
         {
             DataClassification = CustomerContent;
         }

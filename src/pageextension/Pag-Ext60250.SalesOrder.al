@@ -32,7 +32,6 @@ pageextension 60250 "Sales Order" extends "Sales Order"
                 var
                     SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
                 begin
-                    //añadir checks
                     SentLinesMgmt.Inform(Rec);
                 end;
             }
