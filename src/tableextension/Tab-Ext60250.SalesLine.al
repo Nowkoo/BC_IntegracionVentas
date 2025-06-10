@@ -39,7 +39,7 @@ tableextension 60250 "Sales Line" extends "Sales Line"
     var
         SalesHeader: Record "Sales Header";
     begin
-        Rec.Status := Status::Pending;
+        //Rec.Status := Status::Pending;
     end;
 
     trigger OnAfterDelete()
@@ -51,6 +51,8 @@ tableextension 60250 "Sales Line" extends "Sales Line"
         PurchasesSetup: Record "Purchases & Payables Setup";
         SentLineId: Text[50];
     begin
+        RemoveLineFromWS();
+
         //Si se está eliminando el pedido, no es necesario actualizar la cabecera
         if SalesHeader.Get(SalesHeader."Document Type"::Order, Rec."Document No.") and not SalesHeader.Deleting then begin
             //Si no quedan líneas, el pedido no es de nadie
@@ -58,11 +60,8 @@ tableextension 60250 "Sales Line" extends "Sales Line"
             if not SalesLine.FindFirst() then
                 VendorExclusivityMgmt.RemoveOrderOwnership(rec."Document No.");
         end;
-
-        RemoveLineFromWS();
     end;
 
-    //se ejecuta dos veces
     trigger OnBeforeModify()
     var
         SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
@@ -88,10 +87,9 @@ tableextension 60250 "Sales Line" extends "Sales Line"
         SalesLine.SetRange("Document No.", Rec."Document No.");
         SalesHeader.Get(SalesHeader."Document Type"::Order, Rec."Document No.");
 
-        if (xRec."No." <> '') and (xRec.Status = Status::Sent) then begin
-            if SalesLine.FindFirst() and not SalesHeader."Is From Exclusive Vendor" then
-                exit;
-
+        if (Rec.Status = Status::Sent) and
+            SalesHeader.Get(SalesHeader."Document Type"::Order, Rec."Document No.") and
+            SalesHeader."Is From Exclusive Vendor" then begin
             SentLinesMgmt.RemoveLineFromWS(Rec."Document No.", Rec."Line No.");
         end;
     end;

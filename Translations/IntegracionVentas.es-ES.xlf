@@ -1,0 +1,363 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-transitional.xsd">
+  <file datatype="xml" source-language="en-US" target-language="es-ES" original="IntegracionVentas.g.xlf">
+    <body>
+      <group id="body">
+        <trans-unit id="Codeunit 4136056025 - NamedType 623984157" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The call to the web service failed.</source>
+          <target>La llamada al servicio web ha fallado.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Prepared HTTP Requests - NamedType ErrorCallFailedLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 4136056025 - NamedType 2563646394" size-unit="char" translate="yes" xml:space="preserve">
+          <source>The web service returned an error message:\\Status Code: %1\Description: %2</source>
+          <target>El servicio web devolvió un mensaje de error:\\Código de estado: %1\Descripción: %2</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Prepared HTTP Requests - NamedType ErrorWSLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 446863789 - NamedType 2957809300" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Invalid response, expected a JSON object as root object.</source>
+          <target>Respuesta inválida, se esperaba un objeto JSON como elemento raíz.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - NamedType ErrorInvalidResponseLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 446863789 - NamedType 3687054781" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Vendor No. and Customer No. need to be configured first from page Purchases &amp; Payables Setup.</source>
+          <target>Los campos Nº proveedor y Nº cliente deben configurarse primero desde la página de Conf. compras y pagos.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - NamedType ErrorNotConfiguredLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 446863789 - Method 2338463045 - NamedType 2215071904" size-unit="char" translate="yes" xml:space="preserve">
+          <source>All the sales lines from this order need to be ready before posting.</source>
+          <target>Todas las líneas de venta de este pedido deben estar preparadas antes de registrar.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method CheckIfPostIsAllowed - NamedType ErrorNotReadyLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 446863789 - Method 2512326661 - NamedType 56865694" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Could not find a token with key %1</source>
+          <target>No se pudo encontrar un token con la clave %1</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method GetJsonText - NamedType ErrorTokenNotFoundLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 446863789 - Method 1075416076 - NamedType 3343110876" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Web service URL for sent headers needs to be set up first.</source>
+          <target>Primero se debe configurar la URL del servicio web para los encabezados de los pedidos enviados.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method GetSentHeadersBaseUrl - NamedType ErrorNoUrlLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 446863789 - Method 578315619 - NamedType 3343110876" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Web service URL for sent lines needs to be set up first.</source>
+          <target>Primero se debe configurar la URL del servicio web para las líneas de los pedidos enviados.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method GetSentLinesBaseUrl - NamedType ErrorNoUrlLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 446863789 - Method 1856143843 - NamedType 2374456139" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Some items in the order do not have Vendor Item No. configured. Sales lines containing these items could not be sent.</source>
+          <target>Algunos productos del pedido no tienen configurado el Nº proveedor. Las líneas que contienen estos productos no se han podido enviar al servicio web.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method Inform - NamedType VendorItemNoNeededLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 446863789 - Method 3497450614 - NamedType 1386396840" size-unit="char" translate="yes" xml:space="preserve">
+          <source>A default Gen. Prod. Posting Group and Inventory Posting Group need to be selected for newly inserted items in Purchases &amp; Payables Setup page.</source>
+          <target>Se deben seleccionar un Grupo contable de producto general y un Grupo registro inventario predeterminados para los nuevos productos insertados en la página de Conf. compras y pagos.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method InsertItem - NamedType MissingConfigLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 446863789 - Method 3654691326 - NamedType 3943302989" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Vendor %1 has added a line with the next item: %2. There is no registry for this item, do you want to create one? Otherwise the line will be ignored.</source>
+          <target>El proveedor %1 ha añadido una línea con el siguiente producto: %2. No existe un registro para este producto. ¿Desea crear uno? De lo contrario, la línea será ignorada.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method InsertSalesLineFromJsonObject - NamedType CreateItemLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 3372244908 - Method 1879162368 - NamedType 3941846598" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Items acquired from vendor %1 cannot be purchased together with items acquired from other vendors.</source>
+          <target>Los productos adquiridos del proveedor %1 no se pueden comprar junto con productos de otros proveedores.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Vendor Exclusivity Mgmt - Method CheckIfInsertIsAllowed - NamedType ErrorLbl</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3921990236 - Control 332267698 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
+          <source>Sales Integration</source>
+          <target>Integración de ventas.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control SalesIntegration - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3921990236 - Control 3969412542 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
+          <source>New Items Setup</source>
+          <target>Configuración de nuevos producto.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control NewItems - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3921990236 - Control 1936001480 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
+          <source>Vendor Setup</source>
+          <target>Configuración del proveedor</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control Vendor - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3921990236 - Control 2884316743 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
+          <source>Web Service Setup</source>
+          <target>Configuración del servicio web</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control WebService - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1673401186 - Action 332267698 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 1673401186">
+          <source>Sales Integration</source>
+          <target>Integración de ventas</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Sales Order - Action SalesIntegration - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1673401186 - Action 228041575 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 1673401186">
+          <source>Inform the vendor about the sales lines in this order.</source>
+          <target>Informa al proveedor de las líneas de venta de este pedido.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Sales Order - Action InformVendor - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1673401186 - Action 228041575 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 1673401186">
+          <source>Inform Vendor</source>
+          <target>Informar proveedor</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Sales Order - Action InformVendor - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1673401186 - Action 2825511040 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 1673401186">
+          <source>Updates the sales line in the order based on changes made by the vendor.</source>
+          <target>Actualiza las líneas de venta del pedido en base a los cambios realizados por parte del proveedor.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Sales Order - Action PrepareLines - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 1673401186 - Action 2825511040 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 1673401186">
+          <source>Prepare Lines</source>
+          <target>Preparar líneas</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Sales Order - Action PrepareLines - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 2026081320 - Control 513339096 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2026081320">
+          <source>Specifies the status of the line: Pending (waiting to be sent to de web service), Sent: (the line has been informed) and Prepared (changes made by the Vendor have been applied)</source>
+          <target>Especifica el estado de la línea: Pendiente (esperando a ser enviada al servicio web), Enviado (la línea ha sido informada) y Preparado (se han aplicado los cambios realizados por el proveedor).</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Sales Order Subform - Control Status - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 2026081320 - Control 513339096 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 2026081320">
+          <source>Status</source>
+          <target>Estado</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Sales Order Subform - Control Status - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 69955983 - Action 332267698 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3332899200">
+          <source>Sales Integration</source>
+          <target>Integración de ventas</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Sales Orders - Action SalesIntegration - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 69955983 - Action 228041575 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3332899200">
+          <source>Inform the vendor about the sales lines in this order</source>
+          <target>Informa al proveedor de las líneas de venta de este pedido.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Sales Orders - Action InformVendor - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 69955983 - Action 228041575 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3332899200">
+          <source>Inform Vendor</source>
+          <target>Informar proveedor</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Sales Orders - Action InformVendor - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 69955983 - Action 2825511040 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3332899200">
+          <source>Updates the sales line in the order based on changes made by the vendor.</source>
+          <target>Actualiza las líneas de venta del pedido en base a los cambios realizados por parte del proveedor.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Sales Orders - Action PrepareLines - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 69955983 - Action 2825511040 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3332899200">
+          <source>Prepare Lines</source>
+          <target>Preparar líneas</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Sales Orders - Action PrepareLines - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Method 2187865331 - NamedType 1597346414" size-unit="char" translate="yes" xml:space="preserve" al-object-target="TableExtension 3921990236">
+          <source>Password could not be retrieved.</source>
+          <target>No se pudo recuperar la contraseña.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Method GetPassword - NamedType ErrorPasswordNotRetrievedLbl</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Method 16813612 - NamedType 3681458125" size-unit="char" translate="yes" xml:space="preserve" al-object-target="TableExtension 3921990236">
+          <source>Username could not be retrieved.</source>
+          <target>No se pudo recuperar el usuario.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Method GetUsername - NamedType ErrorUsernameNotRetrievedLbl</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Method 843942239 - NamedType 2074574151" size-unit="char" translate="yes" xml:space="preserve" al-object-target="TableExtension 3921990236">
+          <source>Password could not be saved.</source>
+          <target>No se pudo guardar la contraseña.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Method SetPassword - NamedType ErrorPasswordNotSavedLbl</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Method 1027419032 - NamedType 3710487416" size-unit="char" translate="yes" xml:space="preserve" al-object-target="TableExtension 3921990236">
+          <source>Username could not be saved.</source>
+          <target>No se pudo guardar el usuario.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Method SetUsername - NamedType ErrorUsernameNotSavedLbl</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 411531942 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Specifies the default Base Unit of Measure for newly inserted items.</source>
+          <target>Especifica la Unidad medida base por defecto para los nuevos productos insertados.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Base Unit of Measure - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 411531942 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Base Unit of Measure</source>
+          <target>Unidad medida base</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Base Unit of Measure - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 4190130733 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>The identification number that the vendor uses in their system to identify you as a customer.</source>
+          <target>El número de identificación que el proveedor utiliza en su sistema para identificarle como cliente.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Customer No. - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 4190130733 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Customer No.</source>
+          <target>Nº Cliente</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Customer No. - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 2139693550 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Specifies the default Gen. Prod. Posting Group. for newly inserted items.</source>
+          <target>Especifica un Grupo contable de producto general por defecto para nuevos productos insertados.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Gen. Prod. Posting Group - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 2139693550 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Gen. Prod. Posting Group</source>
+          <target>Grupo contable de producto general</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Gen. Prod. Posting Group - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 995016483 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>URL of the vendor's web service that stores the sales headers data.</source>
+          <target>URL del servicio web del proveedor que almacena la información de los encabezados de los pedidos enviados.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Headers Web Service - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 995016483 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Sent Headers URL</source>
+          <target>URL encabezados</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Headers Web Service - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 2037375551 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Specifies the default Inventory Posting Group for newly inserted items.</source>
+          <target>Especifica un Grupo registro inventario por defecto para nuevos productos insertados.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Inventory Posting Group - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 2037375551 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Inventory Posting Group</source>
+          <target>Grupo registro inventario</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Inventory Posting Group - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 1768927268 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>URL of the vendor's web service that stores the sales lines data.</source>
+          <target>URL del servicio web del proveedor que almacena la información de las líneas de los pedidos enviados.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Lines Web Service - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 1768927268 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Sent Lines URL</source>
+          <target>URL líneas</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Lines Web Service - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 3119688693 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>The name of the vendor selected above.</source>
+          <target>El nombre del proveedor seleccionado.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Vendor Name - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 3119688693 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Vendor Name</source>
+          <target>Nombre proveedor</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Vendor Name - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 1527594213 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Your identification number for the vendor that hosts the web service.</source>
+          <target>Su número de identificación para el proveedor que aloja el servicio web.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Vendor No. - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 1527594213 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Vendor No.</source>
+          <target>Nº vendedor</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Vendor No. - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 1527594213 - Method 2126772001 - NamedType 2568437897" size-unit="char" translate="yes" xml:space="preserve" al-object-target="TableExtension 3921990236">
+          <source>If you change vendor all the data from the current vendor will be deleted from the web service. Are you sure you want to change vendor?</source>
+          <target>Si cambia de proveedor, todos los datos del proveedor actual serán eliminados del servicio web. ¿Está seguro de que desea cambiar de proveedor?</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Vendor No. - Method OnValidate - NamedType DeleteVendorDataLbl</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 3625175461 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Password used to connect to vendor's web service.</source>
+          <target>Contraseña utilizada para conectarse al servicio web del proveedor.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field WS Password - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 3625175461 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Password</source>
+          <target>Contraseña</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field WS Password - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 1410612670 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Username used to connect to vendor's web service.</source>
+          <target>Usuario utilizado para conectarse al servicio web del proveedor.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field WS Username - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 1410612670 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Username</source>
+          <target>Usuario</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field WS Username - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 1192395785 - Field 356338168 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 1192395785">
+          <source>Deleting</source>
+          <target>Eliminando</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Sales Header - Field Deleting - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 1192395785 - Field 1774844722 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 1192395785">
+          <source>Is From Exclusive Vendor</source>
+          <target>Es del vendedor exclusivo</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Sales Header - Field Is From Exclusive Vendor - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 2574427010 - Field 513339096 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 2574427010">
+          <source>Status</source>
+          <target>Estado</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Sales Line - Field Status - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 513339096 - EnumValue 3481143665 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Pending</source>
+          <target>Pendiente</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Status - EnumValue Pending - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 513339096 - EnumValue 2521603205 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Ready</source>
+          <target>Preparado</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Status - EnumValue Ready - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="Enum 513339096 - EnumValue 2561328176 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sent</source>
+          <target>Enviado</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Enum Status - EnumValue Sent - Property Caption</note>
+        </trans-unit>
+      </group>
+    </body>
+  </file>
+</xliff>

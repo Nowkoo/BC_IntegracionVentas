@@ -12,44 +12,59 @@ pageextension 60250 "Sales Order" extends "Sales Order"
             trigger OnBeforeAction()
             var
                 SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+                SalesLine: Record "Sales Line";
             begin
                 SentLinesMgmt.CheckIfPostIsAllowed(Rec."No.", Rec."Is From Exclusive Vendor");
+
+                //optimizar borrado con una única consulta al ws?
+                SalesLine.SetRange("Document No.", Rec."No.");
+                if SalesLine.FindSet() then
+                    repeat
+                        SentLinesMgmt.RemoveLineFromWS(Rec."No.", SalesLine."Line No.");
+                    until SalesLine.Next() = 0;
+
+                SentLinesMgmt.RemoveHeaderFromWS(Rec."No.");
                 //SentLinesMgmt.ChangeDocumentStatus(Rec."No."); // no funciona
             end;
         }
 
         addafter(Action21)
         {
-            action(InformVendor)
+            group(SalesIntegration)
             {
-                ApplicationArea = All;
-                Caption = 'Inform Vendor';
-                Image = Info;
-                ToolTip = 'Inform the vendor about the sales lines in this order.';
-                Visible = Rec."Is From Exclusive Vendor";
+                Caption = 'Sales Integration';
+                Image = Web;
+                action(InformVendor)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Inform Vendor';
+                    Image = Info;
+                    ToolTip = 'Inform the vendor about the sales lines in this order.';
+                    Visible = Rec."Is From Exclusive Vendor";
 
-                trigger OnAction()
-                var
-                    SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
-                begin
-                    SentLinesMgmt.Inform(Rec);
-                end;
-            }
+                    trigger OnAction()
+                    var
+                        SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+                    begin
+                        SentLinesMgmt.Inform(Rec);
+                    end;
+                }
 
-            action(PrepareLines)
-            {
-                ApplicationArea = All;
-                Caption = 'Prepare Lines';
-                Image = GetLines;
-                ToolTip = 'Updates the sales line in the order based on changes made by the vendor.';
-                Visible = Rec."Is From Exclusive Vendor";
+                action(PrepareLines)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Prepare Lines';
+                    Image = GetLines;
+                    ToolTip = 'Updates the sales line in the order based on changes made by the vendor.';
+                    Visible = Rec."Is From Exclusive Vendor";
 
-                trigger OnAction()
-                var
-                    SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
-                begin
-                    SentLinesMgmt.PrepareLines(Rec);
-                end;
+                    trigger OnAction()
+                    var
+                        SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+                    begin
+                        SentLinesMgmt.PrepareLines(Rec);
+                    end;
+                }
             }
         }
     }

@@ -1,3 +1,4 @@
+//Solicitudes HTTP con autorización y control de errores.
 codeunit 60252 "Prepared HTTP Requests"
 {
     //Sacado de https://www.kauffmann.nl/2017/06/24/al-support-for-rest-web-services/
@@ -62,17 +63,24 @@ codeunit 60252 "Prepared HTTP Requests"
         HttpContent: HttpContent;
         HttpContentHeaders: HttpHeaders;
         HttpClient: HttpClient;
+        t: SecretText;
     begin
         AddHttpBasicAuthHeader(HttpClient);
-        HttpContent.WriteFrom(JsonText);
         HttpContent.GetHeaders(HttpContentHeaders);
-        HttpContentHeaders.Remove('Content-Type');
+
+        if HttpContentHeaders.Contains('Content-Type') then HttpContentHeaders.Remove('Content-Type');
         HttpContentHeaders.Add('Content-Type', 'application/json');
-        HttpContentHeaders.Add('If-Match', 'OdataEtag');
-        //HttpContentHeaders.Add('Company', Database.CompanyName);
-        HttpRequestMessage.Content := HttpContent;
+
+        if HttpContentHeaders.Contains('Content-Encoding') then HttpContentHeaders.Remove('Content-Encoding');
+        HttpContentHeaders.Add('Content-Encoding', 'UTF8');
+
+        //HttpContentHeaders.Add('If-Match', OdataEtag);
+        HttpContentHeaders.Add('If-Match', '*');
+
+        HttpContent.WriteFrom(JsonText);
         HttpRequestMessage.SetRequestUri(URL);
         HttpRequestMessage.Method := 'PATCH';
+        HttpRequestMessage.Content := HttpContent;
 
         if not HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
             Error(ErrorCallFailedLbl);

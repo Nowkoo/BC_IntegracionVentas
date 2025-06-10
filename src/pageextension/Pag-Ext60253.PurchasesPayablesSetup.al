@@ -8,61 +8,73 @@ pageextension 60253 "Purchases & Payables Setup" extends "Purchases & Payables S
             {
                 Caption = 'Sales Integration';
 
-                field("Vendor No"; Rec."Vendor No.")
+                group(Vendor)
                 {
-                    Caption = 'Vendor No.';
-                    ToolTip = 'Your identification number for the vendor that hosts the web service.';
-                    ApplicationArea = All;
-                    TableRelation = Vendor."No.";
+                    Caption = 'Vendor Setup';
+                    field("Vendor No"; Rec."Vendor No.")
+                    {
+                        ApplicationArea = All;
+                        TableRelation = Vendor."No.";
+                    }
+                    field("Vendor Name"; Rec."Vendor Name")
+                    {
+                        ApplicationArea = All;
+                        Editable = false;
+                    }
+                    field("Customer No."; Rec."Customer No.")
+                    {
+                        ApplicationArea = All;
+                    }
                 }
-                field("Vendor Name"; Rec."Vendor Name")
-                {
-                    Caption = 'Vendor Name';
-                    ToolTip = 'The name of the vendor selected above.';
-                    ApplicationArea = All;
-                    Editable = false;
-                }
-                field("Customer No."; Rec."Customer No.")
-                {
-                    ToolTip = 'The identification number that the vendor uses in their system to identify you as a customer.';
-                    Caption = 'Customer No.';
-                    ApplicationArea = All;
-                }
-                field("Sent Headers URL"; Rec."Headers Web Service")
-                {
-                    Caption = 'Sent Headers URL';
-                    ToolTip = 'URL of the vendor''s web service that stores the sales headers data.';
-                    ApplicationArea = All;
-                }
-                field("Sent Lines URL"; Rec."Lines Web Service")
-                {
-                    Caption = 'Sent Lines URL';
-                    ToolTip = 'URL of the vendor''s web service that stores the sales lines data.';
-                    ApplicationArea = All;
-                }
-                field("Username"; Username)
-                {
-                    Caption = 'Username';
-                    ToolTip = 'Username used to connect to vendor''s web service.';
-                    ApplicationArea = All;
-                    ExtendedDatatype = Masked;
 
-                    trigger OnValidate()
-                    begin
-                        Rec.SetUsername(Username);
-                    end;
-                }
-                field("Password"; Password)
+                group(WebService)
                 {
-                    Caption = 'Password';
-                    ToolTip = 'Password used to connect to vendor''s web service.';
-                    ApplicationArea = All;
-                    ExtendedDatatype = Masked;
+                    Caption = 'Web Service Setup';
+                    field("Sent Headers URL"; Rec."Headers Web Service")
+                    {
+                        ApplicationArea = All;
+                    }
+                    field("Sent Lines URL"; Rec."Lines Web Service")
+                    {
+                        ApplicationArea = All;
+                    }
+                    field("Username"; Username)
+                    {
+                        ApplicationArea = All;
+                        ExtendedDatatype = Masked;
 
-                    trigger OnValidate()
-                    begin
-                        Rec.SetPassword(Password);
-                    end;
+                        trigger OnValidate()
+                        begin
+                            Rec.SetUsername(Username);
+                        end;
+                    }
+                    field("Password"; Password)
+                    {
+                        ApplicationArea = All;
+                        ExtendedDatatype = Masked;
+
+                        trigger OnValidate()
+                        begin
+                            Rec.SetPassword(Password);
+                        end;
+                    }
+                }
+
+                group(NewItems)
+                {
+                    Caption = 'New Items Setup';
+                    field("Gen. Prod. Posting Group"; Rec."Gen. Prod. Posting Group")
+                    {
+                        ApplicationArea = All;
+                    }
+                    field("Inventory Posting Group"; Rec."Inventory Posting Group")
+                    {
+                        ApplicationArea = All;
+                    }
+                    field("Unit of Measure"; Rec."Base Unit of Measure")
+                    {
+                        ApplicationArea = All;
+                    }
                 }
             }
         }
