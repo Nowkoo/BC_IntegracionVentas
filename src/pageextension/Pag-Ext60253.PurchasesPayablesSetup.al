@@ -40,6 +40,8 @@ pageextension 60253 "Purchases & Payables Setup" extends "Purchases & Payables S
                     }
                     field("Username"; Username)
                     {
+                        Caption = 'Username';
+                        ToolTip = 'Username used to connect to vendor''s web service.';
                         ApplicationArea = All;
                         ExtendedDatatype = Masked;
 
@@ -50,6 +52,8 @@ pageextension 60253 "Purchases & Payables Setup" extends "Purchases & Payables S
                     }
                     field("Password"; Password)
                     {
+                        Caption = 'Password';
+                        ToolTip = 'Password used to connect to vendor''s web service.';
                         ApplicationArea = All;
                         ExtendedDatatype = Masked;
 
@@ -82,12 +86,12 @@ pageextension 60253 "Purchases & Payables Setup" extends "Purchases & Payables S
 
     trigger OnOpenPage()
     var
-        PurchasesSetup: Record "Purchases & Payables Setup";
     begin
-        PurchasesSetup.Get();
-        Username := '******';
-        Password := '******';
-        //Password := '***';
+        if not IsNullGuid(Rec."WS Password") then
+            Password := '******';
+
+        if not IsNullGuid(Rec."WS Username") then
+            Username := '******';
     end;
 
     var

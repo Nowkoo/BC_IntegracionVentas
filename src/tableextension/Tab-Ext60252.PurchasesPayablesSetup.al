@@ -47,14 +47,10 @@ tableextension 60252 "Purchases & Payables Setup" extends "Purchases & Payables 
 
         field(358; "WS Password"; Guid)
         {
-            Caption = 'Password';
-            ToolTip = 'Password used to connect to vendor''s web service.';
             DataClassification = SystemMetadata;
         }
         field(359; "WS Username"; Guid)
         {
-            Caption = 'Username';
-            ToolTip = 'Username used to connect to vendor''s web service.';
             DataClassification = SystemMetadata;
         }
         field(360; "Customer No."; Code[20])
