@@ -77,13 +77,13 @@
         </trans-unit>
         <trans-unit id="PageExtension 3921990236 - Control 332267698 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
           <source>Sales Integration</source>
-          <target>Integración de ventas.</target>
+          <target>Integración de ventas</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control SalesIntegration - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 3921990236 - Control 3969412542 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
           <source>New Items Setup</source>
-          <target>Configuración de nuevos producto.</target>
+          <target>Configuración de nuevos productos</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control NewItems - Property Caption</note>
         </trans-unit>
@@ -99,11 +99,23 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control WebService - Property Caption</note>
         </trans-unit>
+        <trans-unit id="PageExtension 3921990236 - Control 2575460289 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
+          <source>Password used to connect to vendor's web service.</source>
+          <target>Contraseña utilizada para conectarse al servicio web del proveedor.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control Password - Property ToolTip</note>
+        </trans-unit>
         <trans-unit id="PageExtension 3921990236 - Control 2575460289 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
           <source>Password</source>
           <target>Contraseña</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control Password - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3921990236 - Control 2994142618 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
+          <source>Username used to connect to vendor's web service.</source>
+          <target>Usuario utilizado para conectarse al servicio web del proveedor.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control Username - Property ToolTip</note>
         </trans-unit>
         <trans-unit id="PageExtension 3921990236 - Control 2994142618 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
           <source>Username</source>
@@ -299,7 +311,7 @@
         </trans-unit>
         <trans-unit id="TableExtension 3921990236 - Field 1527594213 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
           <source>Vendor No.</source>
-          <target>Nº vendedor</target>
+          <target>Nº proveedor</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Vendor No. - Property Caption</note>
         </trans-unit>
@@ -309,28 +321,18 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Vendor No. - Method OnValidate - NamedType DeleteVendorDataLbl</note>
         </trans-unit>
-        <trans-unit id="TableExtension 3921990236 - Field 3625175461 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
-          <source>Password used to connect to vendor's web service.</source>
-          <target>Contraseña utilizada para conectarse al servicio web del proveedor.</target>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field WS Password - Property ToolTip</note>
-        </trans-unit>
         <trans-unit id="TableExtension 3921990236 - Field 3625175461 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
-          <source>Password</source>
-          <target>Contraseña</target>
+          <source>WS Password</source>
+          <target>[NAB: REVIEW]Contraseña</target>
           <note from="Developer" annotates="general" priority="2"></note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">Source has been modified.</note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field WS Password - Property Caption</note>
         </trans-unit>
-        <trans-unit id="TableExtension 3921990236 - Field 1410612670 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
-          <source>Username used to connect to vendor's web service.</source>
-          <target>Usuario utilizado para conectarse al servicio web del proveedor.</target>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field WS Username - Property ToolTip</note>
-        </trans-unit>
         <trans-unit id="TableExtension 3921990236 - Field 1410612670 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
-          <source>Username</source>
-          <target>Usuario</target>
+          <source>WS Username</source>
+          <target>[NAB: REVIEW]Usuario</target>
           <note from="Developer" annotates="general" priority="2"></note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">Source has been modified.</note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field WS Username - Property Caption</note>
         </trans-unit>
         <trans-unit id="TableExtension 1192395785 - Field 356338168 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 1192395785">
@@ -341,7 +343,7 @@
         </trans-unit>
         <trans-unit id="TableExtension 1192395785 - Field 1774844722 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 1192395785">
           <source>Is From Exclusive Vendor</source>
-          <target>Es del vendedor exclusivo</target>
+          <target>Es del proveedor exclusivo</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Sales Header - Field Is From Exclusive Vendor - Property Caption</note>
         </trans-unit>
@@ -368,18 +370,6 @@
           <target>Enviado</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Enum Status - EnumValue Sent - Property Caption</note>
-        </trans-unit>
-        <trans-unit id="PageExtension 3921990236 - Control 2994142618 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
-          <source>Username used to connect to vendor's web service.</source>
-          <target>Usuario utilizado para conectarse al servicio web del proveedor.</target>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control Username - Property ToolTip</note>
-        </trans-unit>
-        <trans-unit id="PageExtension 3921990236 - Control 2575460289 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
-          <source>Password used to connect to vendor's web service.</source>
-          <target>Contraseña utilizada para conectarse al servicio web del proveedor.</target>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control Password - Property ToolTip</note>
         </trans-unit>
       </group>
     </body>

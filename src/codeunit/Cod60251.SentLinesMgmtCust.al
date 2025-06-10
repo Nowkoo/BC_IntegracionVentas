@@ -140,7 +140,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
             end;
         end;
 
-        DisplayItems(InsertedItemsNoList);
+        //DisplayItems(InsertedItemsNoList); //por algún motivo altera la inserción
     end;
 
     local procedure InsertSalesLineFromJsonObject(JsonObject: JsonObject; var InsertedItemsNoList: List of [Text])
