@@ -44,7 +44,7 @@ tableextension 60250 "Sales Line" extends "Sales Line"
 
     trigger OnAfterDelete()
     var
-        SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+        SentLinesMgmt: Codeunit "Sent Lines Mgmt";
         VendorExclusivityMgmt: Codeunit "Vendor Exclusivity Mgmt";
         SalesLine: Record "Sales Line";
         SalesHeader: Record "Sales Header";
@@ -64,7 +64,7 @@ tableextension 60250 "Sales Line" extends "Sales Line"
 
     trigger OnBeforeModify()
     var
-        SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+        SentLinesMgmt: Codeunit "Sent Lines Mgmt";
         SalesHeader: Record "Sales Header";
         PurchasesSetup: Record "Purchases & Payables Setup";
         SentLineId: Text[50];
@@ -78,7 +78,7 @@ tableextension 60250 "Sales Line" extends "Sales Line"
 
     local procedure RemoveLineFromWS()
     var
-        SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+        SentLinesMgmt: Codeunit "Sent Lines Mgmt";
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
         SentLineId: Text[50];

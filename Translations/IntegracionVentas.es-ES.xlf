@@ -15,59 +15,75 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Prepared HTTP Requests - NamedType ErrorWSLbl</note>
         </trans-unit>
-        <trans-unit id="Codeunit 446863789 - NamedType 2957809300" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Codeunit 566758270 - NamedType 2957809300" size-unit="char" translate="yes" xml:space="preserve">
           <source>Invalid response, expected a JSON object as root object.</source>
-          <target>Respuesta inválida, se esperaba un objeto JSON como elemento raíz.</target>
+          <target>[NAB: SUGGESTION]Respuesta inválida, se esperaba un objeto JSON como elemento raíz.</target>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - NamedType ErrorInvalidResponseLbl</note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">Suggested translation inserted.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - NamedType ErrorInvalidResponseLbl</note>
         </trans-unit>
-        <trans-unit id="Codeunit 446863789 - NamedType 3687054781" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Codeunit 566758270 - NamedType 3687054781" size-unit="char" translate="yes" xml:space="preserve">
           <source>Vendor No. and Customer No. need to be configured first from page Purchases &amp; Payables Setup.</source>
-          <target>Los campos Nº proveedor y Nº cliente deben configurarse primero desde la página de Conf. compras y pagos.</target>
+          <target>[NAB: SUGGESTION]Los campos Nº proveedor y Nº cliente deben configurarse primero desde la página de Conf. compras y pagos.</target>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - NamedType ErrorNotConfiguredLbl</note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">Suggested translation inserted.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - NamedType ErrorNotConfiguredLbl</note>
         </trans-unit>
-        <trans-unit id="Codeunit 446863789 - Method 2338463045 - NamedType 2215071904" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Codeunit 566758270 - Method 2338463045 - NamedType 2215071904" size-unit="char" translate="yes" xml:space="preserve">
           <source>All the sales lines from this order need to be ready before posting.</source>
-          <target>Todas las líneas de venta de este pedido deben estar preparadas antes de registrar.</target>
+          <target>[NAB: SUGGESTION]Todas las líneas de venta de este pedido deben estar preparadas antes de registrar.</target>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method CheckIfPostIsAllowed - NamedType ErrorNotReadyLbl</note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">Suggested translation inserted.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method CheckIfPostIsAllowed - NamedType ErrorNotReadyLbl</note>
         </trans-unit>
-        <trans-unit id="Codeunit 446863789 - Method 2512326661 - NamedType 56865694" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Codeunit 566758270 - Method 2512326661 - NamedType 56865694" size-unit="char" translate="yes" xml:space="preserve">
           <source>Could not find a token with key %1</source>
-          <target>No se pudo encontrar un token con la clave %1</target>
+          <target>[NAB: SUGGESTION]No se pudo encontrar un token con la clave %1</target>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method GetJsonText - NamedType ErrorTokenNotFoundLbl</note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">Suggested translation inserted.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method GetJsonText - NamedType ErrorTokenNotFoundLbl</note>
         </trans-unit>
-        <trans-unit id="Codeunit 446863789 - Method 1075416076 - NamedType 3343110876" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Codeunit 566758270 - Method 1075416076 - NamedType 3343110876" size-unit="char" translate="yes" xml:space="preserve">
           <source>Web service URL for sent headers needs to be set up first.</source>
-          <target>Primero se debe configurar la URL del servicio web para los encabezados de los pedidos enviados.</target>
+          <target>[NAB: SUGGESTION]Primero se debe configurar la URL del servicio web para los encabezados de los pedidos enviados.</target>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method GetSentHeadersBaseUrl - NamedType ErrorNoUrlLbl</note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">Suggested translation inserted.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method GetSentHeadersBaseUrl - NamedType ErrorNoUrlLbl</note>
         </trans-unit>
-        <trans-unit id="Codeunit 446863789 - Method 578315619 - NamedType 3343110876" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Codeunit 566758270 - Method 578315619 - NamedType 3343110876" size-unit="char" translate="yes" xml:space="preserve">
           <source>Web service URL for sent lines needs to be set up first.</source>
-          <target>Primero se debe configurar la URL del servicio web para las líneas de los pedidos enviados.</target>
+          <target>[NAB: SUGGESTION]Primero se debe configurar la URL del servicio web para las líneas de los pedidos enviados.</target>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method GetSentLinesBaseUrl - NamedType ErrorNoUrlLbl</note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">Suggested translation inserted.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method GetSentLinesBaseUrl - NamedType ErrorNoUrlLbl</note>
         </trans-unit>
-        <trans-unit id="Codeunit 446863789 - Method 1856143843 - NamedType 2374456139" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Codeunit 566758270 - Method 1856143843 - NamedType 2374456139" size-unit="char" translate="yes" xml:space="preserve">
           <source>Some items in the order do not have Vendor Item No. configured. Sales lines containing these items could not be sent.</source>
-          <target>Algunos productos del pedido no tienen configurado el Nº proveedor. Las líneas que contienen estos productos no se han podido enviar al servicio web.</target>
+          <target>[NAB: SUGGESTION]Algunos productos del pedido no tienen configurado el Nº proveedor. Las líneas que contienen estos productos no se han podido enviar al servicio web.</target>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method Inform - NamedType VendorItemNoNeededLbl</note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">Suggested translation inserted.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method Inform - NamedType VendorItemNoNeededLbl</note>
         </trans-unit>
-        <trans-unit id="Codeunit 446863789 - Method 3497450614 - NamedType 1386396840" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Codeunit 566758270 - Method 3497450614 - NamedType 1386396840" size-unit="char" translate="yes" xml:space="preserve">
           <source>A default Gen. Prod. Posting Group and Inventory Posting Group need to be selected for newly inserted items in Purchases &amp; Payables Setup page.</source>
-          <target>Se deben seleccionar un Grupo contable de producto general y un Grupo registro inventario predeterminados para los nuevos productos insertados en la página de Conf. compras y pagos.</target>
+          <target>[NAB: SUGGESTION]Se deben seleccionar un Grupo contable de producto general y un Grupo registro inventario predeterminados para los nuevos productos insertados en la página de Conf. compras y pagos.</target>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method InsertItem - NamedType MissingConfigLbl</note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">Suggested translation inserted.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method InsertItem - NamedType MissingConfigLbl</note>
         </trans-unit>
-        <trans-unit id="Codeunit 446863789 - Method 3654691326 - NamedType 3943302989" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Codeunit 566758270 - Method 3654691326 - NamedType 3943302989" size-unit="char" translate="yes" xml:space="preserve">
           <source>Vendor %1 has added a line with the next item: %2. There is no registry for this item, do you want to create one? Otherwise the line will be ignored.</source>
-          <target>El proveedor %1 ha añadido una línea con el siguiente producto: %2. No existe un registro para este producto. ¿Desea crear uno? De lo contrario, la línea será ignorada.</target>
+          <target>[NAB: SUGGESTION]El proveedor %1 ha añadido una línea con el siguiente producto: %2. No existe un registro para este producto. ¿Desea crear uno? De lo contrario, la línea será ignorada.</target>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt Cust - Method InsertSalesLineFromJsonObject - NamedType CreateItemLbl</note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">Suggested translation inserted.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method InsertSalesLineFromJsonObject - NamedType CreateItemLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 566758270 - Method 3889302826 - NamedType 3569966352" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Integration Job Queue Entry</source>
+          <target>[NAB: REVIEW]Integr</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">Source has been modified.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method TurnOnJobQueueEntry - NamedType DescriptionLbl</note>
         </trans-unit>
         <trans-unit id="Codeunit 3372244908 - Method 1879162368 - NamedType 3941846598" size-unit="char" translate="yes" xml:space="preserve">
           <source>Items acquired from vendor %1 cannot be purchased together with items acquired from other vendors.</source>
@@ -80,6 +96,26 @@
           <target>Integración de ventas</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control SalesIntegration - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3921990236 - Control 3979136067 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
+          <source>Extension</source>
+          <target>Extensión</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">New translation.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control Extension - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3921990236 - Control 438134560 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
+          <source>Turn on a Job Queue Entry to exchange sales information with the vendor periodically</source>
+          <target>Active una entrada de cola de proyecto para intercambiar periódicamente información de las ventas con el proveedor.</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">New translation.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control Run automatically - Property ToolTip</note>
+        </trans-unit>
+        <trans-unit id="PageExtension 3921990236 - Control 438134560 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
+          <source>Run automatically</source>
+          <target>Ejecutar automáticamente</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">PageExtension Purchases &amp; Payables Setup - Control Run automatically - Property Caption</note>
         </trans-unit>
         <trans-unit id="PageExtension 3921990236 - Control 3969412542 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Page 3921990236">
           <source>New Items Setup</source>
@@ -278,6 +314,13 @@
           <target>Grupo registro inventario</target>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Inventory Posting Group - Property Caption</note>
+        </trans-unit>
+        <trans-unit id="TableExtension 3921990236 - Field 2915242865 - Property 2879900210" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
+          <source>Job Queue Entry Id</source>
+          <target>Id entrada cola de proyecto</target>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="NAB AL Tool Refresh Xlf" annotates="general" priority="3">New translation.</note>
+          <note from="Xliff Generator" annotates="general" priority="3">TableExtension Purchases &amp; Payables Setup - Field Job Queue Entry Id - Property Caption</note>
         </trans-unit>
         <trans-unit id="TableExtension 3921990236 - Field 1768927268 - Property 1295455071" size-unit="char" translate="yes" xml:space="preserve" al-object-target="Table 3921990236">
           <source>URL of the vendor's web service that stores the sales lines data.</source>

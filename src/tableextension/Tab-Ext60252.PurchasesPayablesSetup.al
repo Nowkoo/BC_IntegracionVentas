@@ -11,7 +11,7 @@ tableextension 60252 "Purchases & Payables Setup" extends "Purchases & Payables 
             trigger OnValidate()
             var
                 Vendor: Record Vendor;
-                SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+                SentLinesMgmt: Codeunit "Sent Lines Mgmt";
                 DeleteVendorDataLbl: Label 'If you change vendor all the data from the current vendor will be deleted from the web service. Are you sure you want to change vendor?';
             begin
                 if xRec."Vendor No." <> '' then begin
@@ -79,6 +79,12 @@ tableextension 60252 "Purchases & Payables Setup" extends "Purchases & Payables 
             ToolTip = 'Specifies the default Base Unit of Measure for newly inserted items.';
             DataClassification = CustomerContent;
             TableRelation = "Unit of Measure";
+        }
+        field(364; "Job Queue Entry Id"; Guid)
+        {
+            Caption = 'Job Queue Entry Id';
+            DataClassification = CustomerContent;
+            TableRelation = "Job Queue Entry";
         }
     }
 

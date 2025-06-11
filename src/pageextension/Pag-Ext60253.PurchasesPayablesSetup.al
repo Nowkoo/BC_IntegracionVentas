@@ -80,6 +80,27 @@ pageextension 60253 "Purchases & Payables Setup" extends "Purchases & Payables S
                         ApplicationArea = All;
                     }
                 }
+
+                group(Extension)
+                {
+                    Caption = 'Extension';
+                    field("Run automatically"; ToggleJobQueue)
+                    {
+                        Caption = 'Run automatically';
+                        ToolTip = 'Turn on a Job Queue Entry to exchange sales information with the vendor periodically';
+                        ApplicationArea = All;
+
+                        trigger OnValidate()
+                        var
+                            SentLinesMgmt: Codeunit "Sent Lines Mgmt";
+                        begin
+                            if ToggleJobQueue = true then
+                                SentLinesMgmt.TurnOnJobQueueEntry()
+                            else
+                                SentLinesMgmt.TurnOffJobQueueEntry();
+                        end;
+                    }
+                }
             }
         }
     }
@@ -97,4 +118,5 @@ pageextension 60253 "Purchases & Payables Setup" extends "Purchases & Payables S
     var
         Username: Text;
         Password: Text;
+        ToggleJobQueue: Boolean;
 }

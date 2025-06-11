@@ -14,7 +14,7 @@ tableextension 60251 "Sales Header" extends "Sales Header"
 
     trigger OnBeforeDelete()
     var
-        SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+        SentLinesMgmt: Codeunit "Sent Lines Mgmt";
         PurchasesSetup: Record "Purchases & Payables Setup";
     begin
         Rec.Deleting := true;

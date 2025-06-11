@@ -1,5 +1,5 @@
 //https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/webservices/web-services-authentication
-codeunit 60251 "Sent Lines Mgmt Cust"
+codeunit 60251 "Sent Lines Mgmt"
 {
     //Para ejecutar desde cola de proyectos
     trigger OnRun()
@@ -67,7 +67,6 @@ codeunit 60251 "Sent Lines Mgmt Cust"
 
         if UnconfiguredItemsNos.Count <> 0 then begin
             Message(VendorItemNoNeededLbl);
-            //Se podrían mostrar una lista filtrada de los items en cuestión
         end;
 
         SalesHeader.Modify();
@@ -538,6 +537,7 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         Item: Record Item;
         ItemsPage: Page "Item List";
         Filter: Text;
+        ItemCardPage: Page "Item Card";
     begin
         if InsertedItemsNoList.Count = 1 then begin
             if Item.Get(InsertedItemsNoList.Get(1)) then
@@ -565,6 +565,53 @@ codeunit 60251 "Sent Lines Mgmt Cust"
         if Filter <> '' then
             Filter := Filter.Remove(Text.StrLen(Filter));
         exit(Filter);
+    end;
+
+    procedure TurnOnJobQueueEntry()
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+        PurchasesSetup: Record "Purchases & Payables Setup";
+        //Lbl: Label 'Do you wish to navigate to the Job Queue Entry?';
+        DescriptionLbl: Label 'Sales Integration Job Queue Entry';
+    begin
+        PurchasesSetup.Get();
+        if not JobQueueEntry.Get(PurchasesSetup."Job Queue Entry Id") then begin
+            JobQueueEntry.Validate("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
+            JobQueueEntry.Validate("Object ID to Run", Codeunit::"Sent Lines Mgmt");
+            JobQueueEntry.Insert(true);
+            JobQueueEntry.Validate("Earliest Start Date/Time", CurrentDateTime());
+            JobQueueEntry.Validate("Recurring Job", true);
+            JobQueueEntry.Validate(Description, DescriptionLbl);
+
+            JobQueueEntry."Run on Mondays" := true;
+            JobQueueEntry."Run on Tuesdays" := true;
+            JobQueueEntry."Run on Wednesdays" := true;
+            JobQueueEntry."Run on Thursdays" := true;
+            JobQueueEntry."Run on Fridays" := true;
+            JobQueueEntry."Run on Saturdays" := true;
+            JobQueueEntry."Run on Sundays" := true;
+
+            PurchasesSetup."Job Queue Entry Id" := JobQueueEntry.ID;
+            PurchasesSetup.Modify(true);
+        end;
+
+        JobQueueEntry.Status := JobQueueEntry.Status::Ready;
+        JobQueueEntry.Modify(true);
+
+        //if Dialog.Confirm('¿Modificar entrada de cola de trabajo?') then
+        Page.Run(Page::"Job Queue Entry Card", JobQueueEntry);
+    end;
+
+    procedure TurnOffJobQueueEntry()
+    var
+        JobQueueEntry: Record "Job Queue Entry";
+        PurchasesSetup: Record "Purchases & Payables Setup";
+    begin
+        PurchasesSetup.Get();
+        if JobQueueEntry.Get(PurchasesSetup."Job Queue Entry Id") then begin
+            JobQueueEntry.Status := JobQueueEntry.Status::"On Hold";
+            JobQueueEntry.Modify();
+        end;
     end;
 
     var

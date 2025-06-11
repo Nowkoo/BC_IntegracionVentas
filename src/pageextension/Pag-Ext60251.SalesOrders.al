@@ -11,7 +11,7 @@ pageextension 60251 "Sales Orders" extends "Sales Order List"
         {
             trigger OnBeforeAction()
             var
-                SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+                SentLinesMgmt: Codeunit "Sent Lines Mgmt";
             begin
                 SentLinesMgmt.CheckIfPostIsAllowed(Rec."No.", Rec."Is From Exclusive Vendor");
             end;
@@ -33,7 +33,7 @@ pageextension 60251 "Sales Orders" extends "Sales Order List"
 
                     trigger OnAction()
                     var
-                        SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+                        SentLinesMgmt: Codeunit "Sent Lines Mgmt";
                     begin
                         SentLinesMgmt.Inform(Rec);
                     end;
@@ -49,7 +49,7 @@ pageextension 60251 "Sales Orders" extends "Sales Order List"
 
                     trigger OnAction()
                     var
-                        SentLinesMgmt: Codeunit "Sent Lines Mgmt Cust";
+                        SentLinesMgmt: Codeunit "Sent Lines Mgmt";
                     begin
                         SentLinesMgmt.PrepareLines(Rec);
                     end;
