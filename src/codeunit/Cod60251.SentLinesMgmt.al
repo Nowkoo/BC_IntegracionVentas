@@ -121,7 +121,6 @@ codeunit 60251 "Sent Lines Mgmt"
 
         RemoveLinesDeletedByVendor(SalesHeader."No.", LineNosFromOrderInWS);
         RemoveQueriedLinesFromWS(JsonArray);
-        //DisplayItems(InsertedItemsNoList); //por algún motivo altera la inserción
     end;
 
     local procedure InsertSalesLineFromJsonObject(JsonObject: JsonObject; var InsertedItemsNoList: List of [Text])
@@ -527,41 +526,6 @@ codeunit 60251 "Sent Lines Mgmt"
         if not JsonObject.Get(TokenKey, JsonToken) then
             exit('');
         exit(JsonToken.AsValue().AsText());
-    end;
-
-    local procedure DisplayItems(InsertedItemsNoList: List of [Text])
-    var
-        Item: Record Item;
-        ItemsPage: Page "Item List";
-        Filter: Text;
-        ItemCardPage: Page "Item Card";
-    begin
-        if InsertedItemsNoList.Count = 1 then begin
-            if Item.Get(InsertedItemsNoList.Get(1)) then
-                Page.Run(Page::"Item Card", Item);
-        end
-        else if InsertedItemsNoList.Count > 1 then begin
-            Filter := GetFilterFromNoList(InsertedItemsNoList);
-            Item.SetFilter("No.", Filter);
-            ItemsPage.SetTableView(Item);
-            ItemsPage.Run();
-        end;
-    end;
-
-    local procedure GetFilterFromNoList(InsertedItemsNoList: List of [Text]) Filter: Text
-    var
-        No: Text;
-        NoList: List of [Text];
-    begin
-        foreach No in InsertedItemsNoList do begin
-            if not NoList.Contains(No) then begin
-                NoList.Add(No);
-                Filter := Filter + No + '|';
-            end;
-        end;
-        if Filter <> '' then
-            Filter := Filter.Remove(Text.StrLen(Filter));
-        exit(Filter);
     end;
 
     procedure TurnOnJobQueueEntry()
