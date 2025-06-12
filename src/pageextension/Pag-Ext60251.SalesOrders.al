@@ -13,7 +13,7 @@ pageextension 60251 "Sales Orders" extends "Sales Order List"
             var
                 SentLinesMgmt: Codeunit "Sent Lines Mgmt";
             begin
-                SentLinesMgmt.CheckIfPostIsAllowed(Rec."No.", Rec."Is From Exclusive Vendor");
+                SentLinesMgmt.CheckIfAllLinesReady(Rec."No.", Rec."Is From Exclusive Vendor");
             end;
         }
 

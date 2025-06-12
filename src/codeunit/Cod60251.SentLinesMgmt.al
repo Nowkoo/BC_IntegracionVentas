@@ -119,26 +119,8 @@ codeunit 60251 "Sent Lines Mgmt"
             LineNosFromOrderInWS.Add(GetJsonText(JsonObject, 'lineNo'));
         end;
 
-        //Se borran del pedido todas las que no están en LineNosFromOrderInWS
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
-        SalesLine.SetRange(Type, SalesLine.Type::Item);
-        if SalesLine.FindSet() then
-            repeat
-                if (SalesLine.Status = SalesLine.Status::Sent) and not LineNosFromOrderInWS.Contains(Format(SalesLine."Line No.")) then
-                    SalesLine.Delete();
-            until SalesLine.Next() = 0;
-
-        //Eliminar las líneas que ya se han procesado del web service
-        foreach JsonToken in JsonArray do begin
-            JsonObject := JsonToken.AsObject();
-            Evaluate(IsLineReady, GetJsonText(JsonObject, 'ready'));
-            if IsLineReady then begin
-                URL := GetSentLinesBaseUrl() + '(' + GetJsonText(JsonObject, 'id') + ')';
-                HttpRequests.DeleteJsonObject(URL);
-            end;
-        end;
-
+        RemoveLinesDeletedByVendor(SalesHeader."No.", LineNosFromOrderInWS);
+        RemoveQueriedLinesFromWS(JsonArray);
         //DisplayItems(InsertedItemsNoList); //por algún motivo altera la inserción
     end;
 
@@ -198,7 +180,6 @@ codeunit 60251 "Sent Lines Mgmt"
         end;
     end;
 
-    //mercadería hardcoded?
     local procedure InsertItem(var Item: Record Item; VendorNo: Code[20]; VendorItemNo: Code[20]; Description: Text[100]): Boolean
     var
         PurchasesSetup: Record "Purchases & Payables Setup";
@@ -254,7 +235,7 @@ codeunit 60251 "Sent Lines Mgmt"
         SalesLine.Modify();
     end;
 
-    local procedure DeleteMissingSentLines(SalesHeaderNo: Code[20]; LineNosFromOrderInWS: List of [Text])
+    local procedure RemoveLinesDeletedByVendor(SalesHeaderNo: Code[20]; LineNosFromOrderInWS: List of [Text])
     var
         SalesLine: Record "Sales Line";
     begin
@@ -263,10 +244,26 @@ codeunit 60251 "Sent Lines Mgmt"
         SalesLine.SetRange(Type, SalesLine.Type::Item);
         if SalesLine.FindSet() then
             repeat
-                if (SalesLine.Status = SalesLine.Status::Sent) and not LineNosFromOrderInWS.Contains(Format(SalesLine."Line No.")) then begin
+                if (SalesLine.Status = SalesLine.Status::Sent) and not LineNosFromOrderInWS.Contains(Format(SalesLine."Line No.")) then
                     SalesLine.Delete();
-                end;
             until SalesLine.Next() = 0;
+    end;
+
+    local procedure RemoveQueriedLinesFromWS(JsonArray: JsonArray)
+    var
+        JsonToken: JsonToken;
+        IsLineReady: Boolean;
+        JsonObject: JsonObject;
+        URL: Text;
+    begin
+        foreach JsonToken in JsonArray do begin
+            JsonObject := JsonToken.AsObject();
+            Evaluate(IsLineReady, GetJsonText(JsonObject, 'ready'));
+            if IsLineReady then begin
+                URL := GetSentLinesBaseUrl() + '(' + GetJsonText(JsonObject, 'id') + ')';
+                HttpRequests.DeleteJsonObject(URL);
+            end;
+        end;
     end;
 
     procedure RemoveHeaderFromWS(SalesHeaderNo: Code[20])
@@ -297,6 +294,17 @@ codeunit 60251 "Sent Lines Mgmt"
         HttpRequests.DeleteJsonObject(Url);
     end;
 
+    procedure RemoveLineFromWS(SentLineWSId: Text)
+    var
+        URL: Text;
+        SentLine: JsonObject;
+    begin
+        if SentLineWSId = '' then
+            exit;
+        URL := GetSentLinesBaseUrl() + '(' + SentLineWSId + ')';
+        HttpRequests.DeleteJsonObject(Url);
+    end;
+
     local procedure RemoveOrderFromWS(SalesHeaderNo: Code[20])
     var
         myInt: Integer;
@@ -305,6 +313,43 @@ codeunit 60251 "Sent Lines Mgmt"
         //get de todas las líneas de un pedido
         //iterar líneas del get y ver si coinciden con las del pedido, si coinciden, borrar
         //borrar cabecera
+    end;
+
+    procedure RemoveCustomerDataFromWS(CustomerNo: Code[20])
+    var
+        PurchasesSetup: Record "Purchases & Payables Setup";
+    begin
+        PurchasesSetup.Get();
+        RemoveFromCustomer(GetSentLinesBaseUrl(), 'id', PurchasesSetup."Customer No.");
+        RemoveFromCustomer(GetSentHeadersBaseUrl(), 'id', PurchasesSetup."Customer No.");
+    end;
+
+    procedure RemoveFromCustomer(BaseURL: Text; IdKey: Text; CustomerNo: Code[20])
+    var
+        URL: Text;
+        PurchasesSetup: Record "Purchases & Payables Setup";
+        HttpResponseMessage: HttpResponseMessage;
+        JsonObject: JsonObject;
+        JsonToken: JsonToken;
+        JsonArray: JsonArray;
+        JsonText: Text;
+        LineId: Text;
+        HttpRequests: Codeunit "Prepared HTTP Requests";
+    begin
+        URL := BaseURL + '/?$filter=customerNo eq ''' + CustomerNo + '''';
+        HttpRequests.GetJsonData(URL, HttpResponseMessage);
+
+        HttpResponseMessage.Content.ReadAs(JsonText);
+        if not JsonObject.ReadFrom(JsonText) then
+            Error(ErrorInvalidResponseLbl);
+
+        JsonObject.Get('value', JsonToken);
+        JsonArray := JsonToken.AsArray();
+        foreach JsonToken in JsonArray do begin
+            JsonObject := JsonToken.AsObject();
+            URL := BaseURL + '(' + GetJsonText(JsonObject, IdKey) + ')';
+            HttpRequests.DeleteJsonObject(Url);
+        end;
     end;
 
     procedure GetSentLine(SalesHeaderNo: Code[20]; LineNo: Integer; var JsonObject: JsonObject)
@@ -361,51 +406,6 @@ codeunit 60251 "Sent Lines Mgmt"
         end;
     end;
 
-    procedure DeleteAll()
-    var
-        URL: Text;
-        PurchasesSetup: Record "Purchases & Payables Setup";
-        HttpResponseMessage: HttpResponseMessage;
-        JsonObject: JsonObject;
-        JsonToken: JsonToken;
-        JsonArray: JsonArray;
-        JsonText: Text;
-        LineNo: Integer;
-    begin
-        PurchasesSetup.Get();
-
-        //Borrar todas las líneas del cliente
-        URL := GetSentLinesBaseUrl() + '/?$filter=customerNo eq ''' + PurchasesSetup."Customer No." + '''';
-        HttpRequests.GetJsonData(URL, HttpResponseMessage);
-
-        HttpResponseMessage.Content.ReadAs(JsonText);
-        if not JsonObject.ReadFrom(JsonText) then
-            Error(ErrorInvalidResponseLbl);
-
-        JsonObject.Get('value', JsonToken);
-        JsonArray := JsonToken.AsArray();
-        foreach JsonToken in JsonArray do begin
-            JsonObject := JsonToken.AsObject();
-            Evaluate(LineNo, GetJsonText(JsonObject, 'lineNo'));
-            RemoveLineFromWS(GetJsonText(JsonObject, 'documentNo'), LineNo);
-        end;
-
-        //Borrar todos los headers del cliente
-        URL := GetSentHeadersBaseUrl() + '/?$filter=customerNo eq ''' + PurchasesSetup."Customer No." + '''';
-        HttpRequests.GetJsonData(URL, HttpResponseMessage);
-
-        HttpResponseMessage.Content.ReadAs(JsonText);
-        if not JsonObject.ReadFrom(JsonText) then
-            Error(ErrorInvalidResponseLbl);
-
-        JsonObject.Get('value', JsonToken);
-        JsonArray := JsonToken.AsArray();
-        foreach JsonToken in JsonArray do begin
-            JsonObject := JsonToken.AsObject();
-            RemoveHeaderFromWS(GetJsonText(JsonObject, 'no'));
-        end;
-    end;
-
     local procedure GetSentHeadersBaseUrl(): Text
     var
         PurchasesSetup: Record "Purchases & Payables Setup";
@@ -434,7 +434,7 @@ codeunit 60251 "Sent Lines Mgmt"
         end;
     end;
 
-    procedure CheckIfPostIsAllowed(SalesHeaderNo: Code[20]; IsFromExclusiveVendor: Boolean)
+    procedure CheckIfAllLinesReady(SalesHeaderNo: Code[20]; IsFromExclusiveVendor: Boolean)
     var
         PurchasesSetup: Record "Purchases & Payables Setup";
         ErrorNotReadyLbl: Label 'All the sales lines from this order need to be ready before posting.';
@@ -571,26 +571,11 @@ codeunit 60251 "Sent Lines Mgmt"
     var
         JobQueueEntry: Record "Job Queue Entry";
         PurchasesSetup: Record "Purchases & Payables Setup";
-        //Lbl: Label 'Do you wish to navigate to the Job Queue Entry?';
-        DescriptionLbl: Label 'Sales Integration Job Queue Entry';
+    //Lbl: Label 'Do you wish to navigate to the Job Queue Entry?';
     begin
         PurchasesSetup.Get();
         if not JobQueueEntry.Get(PurchasesSetup."Job Queue Entry Id") then begin
-            JobQueueEntry.Validate("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
-            JobQueueEntry.Validate("Object ID to Run", Codeunit::"Sent Lines Mgmt");
-            JobQueueEntry.Insert(true);
-            JobQueueEntry.Validate("Earliest Start Date/Time", CurrentDateTime());
-            JobQueueEntry.Validate("Recurring Job", true);
-            JobQueueEntry.Validate(Description, DescriptionLbl);
-
-            JobQueueEntry."Run on Mondays" := true;
-            JobQueueEntry."Run on Tuesdays" := true;
-            JobQueueEntry."Run on Wednesdays" := true;
-            JobQueueEntry."Run on Thursdays" := true;
-            JobQueueEntry."Run on Fridays" := true;
-            JobQueueEntry."Run on Saturdays" := true;
-            JobQueueEntry."Run on Sundays" := true;
-
+            InitJobQueueEntry(JobQueueEntry);
             PurchasesSetup."Job Queue Entry Id" := JobQueueEntry.ID;
             PurchasesSetup.Modify(true);
         end;
@@ -612,6 +597,25 @@ codeunit 60251 "Sent Lines Mgmt"
             JobQueueEntry.Status := JobQueueEntry.Status::"On Hold";
             JobQueueEntry.Modify();
         end;
+    end;
+
+    local procedure InitJobQueueEntry(var JobQueueEntry: Record "Job Queue Entry")
+    var
+        DescriptionLbl: Label 'Sales Integration Job Queue Entry';
+    begin
+        JobQueueEntry.Validate("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
+        JobQueueEntry.Validate("Object ID to Run", Codeunit::"Sent Lines Mgmt");
+        JobQueueEntry.Insert(true);
+        JobQueueEntry.Validate("Earliest Start Date/Time", CurrentDateTime());
+        JobQueueEntry.Validate("Recurring Job", true);
+        JobQueueEntry.Validate(Description, DescriptionLbl);
+        JobQueueEntry."Run on Mondays" := true;
+        JobQueueEntry."Run on Tuesdays" := true;
+        JobQueueEntry."Run on Wednesdays" := true;
+        JobQueueEntry."Run on Thursdays" := true;
+        JobQueueEntry."Run on Fridays" := true;
+        JobQueueEntry."Run on Saturdays" := true;
+        JobQueueEntry."Run on Sundays" := true;
     end;
 
     var

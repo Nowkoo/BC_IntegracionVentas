@@ -14,7 +14,7 @@ pageextension 60250 "Sales Order" extends "Sales Order"
                 SentLinesMgmt: Codeunit "Sent Lines Mgmt";
                 SalesLine: Record "Sales Line";
             begin
-                SentLinesMgmt.CheckIfPostIsAllowed(Rec."No.", Rec."Is From Exclusive Vendor");
+                SentLinesMgmt.CheckIfAllLinesReady(Rec."No.", Rec."Is From Exclusive Vendor");
 
                 //optimizar borrado con una única consulta al ws?
                 SalesLine.SetRange("Document No.", Rec."No.");

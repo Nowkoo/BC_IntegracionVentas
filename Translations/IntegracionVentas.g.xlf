@@ -23,10 +23,10 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - NamedType ErrorNotConfiguredLbl</note>
         </trans-unit>
-        <trans-unit id="Codeunit 566758270 - Method 2338463045 - NamedType 2215071904" size-unit="char" translate="yes" xml:space="preserve">
+        <trans-unit id="Codeunit 566758270 - Method 4111847250 - NamedType 2215071904" size-unit="char" translate="yes" xml:space="preserve">
           <source>All the sales lines from this order need to be ready before posting.</source>
           <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method CheckIfPostIsAllowed - NamedType ErrorNotReadyLbl</note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method CheckIfAllLinesReady - NamedType ErrorNotReadyLbl</note>
         </trans-unit>
         <trans-unit id="Codeunit 566758270 - Method 2512326661 - NamedType 56865694" size-unit="char" translate="yes" xml:space="preserve">
           <source>Could not find a token with key %1</source>
@@ -48,6 +48,11 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method Inform - NamedType VendorItemNoNeededLbl</note>
         </trans-unit>
+        <trans-unit id="Codeunit 566758270 - Method 4102726404 - NamedType 3569966352" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Sales Integration Job Queue Entry</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method InitJobQueueEntry - NamedType DescriptionLbl</note>
+        </trans-unit>
         <trans-unit id="Codeunit 566758270 - Method 3497450614 - NamedType 1386396840" size-unit="char" translate="yes" xml:space="preserve">
           <source>A default Gen. Prod. Posting Group and Inventory Posting Group need to be selected for newly inserted items in Purchases &amp; Payables Setup page.</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -57,11 +62,6 @@
           <source>Vendor %1 has added a line with the next item: %2. There is no registry for this item, do you want to create one? Otherwise the line will be ignored.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method InsertSalesLineFromJsonObject - NamedType CreateItemLbl</note>
-        </trans-unit>
-        <trans-unit id="Codeunit 566758270 - Method 3889302826 - NamedType 3569966352" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Sales Integration Job Queue Entry</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method TurnOnJobQueueEntry - NamedType DescriptionLbl</note>
         </trans-unit>
         <trans-unit id="Codeunit 3372244908 - Method 1879162368 - NamedType 3941846598" size-unit="char" translate="yes" xml:space="preserve">
           <source>Items acquired from vendor %1 cannot be purchased together with items acquired from other vendors.</source>

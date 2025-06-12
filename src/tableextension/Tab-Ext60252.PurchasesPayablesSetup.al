@@ -16,7 +16,7 @@ tableextension 60252 "Purchases & Payables Setup" extends "Purchases & Payables 
             begin
                 if xRec."Vendor No." <> '' then begin
                     if Dialog.Confirm(DeleteVendorDataLbl) then
-                        SentLinesMgmt.DeleteAll()
+                        SentLinesMgmt.RemoveCustomerDataFromWS(Rec."Customer No.")
                     else
                         "Vendor No." := xRec."Vendor No.";
                 end;
