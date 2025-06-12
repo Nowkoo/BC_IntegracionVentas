@@ -11,12 +11,15 @@ tableextension 60252 "Purchases & Payables Setup" extends "Purchases & Payables 
             trigger OnValidate()
             var
                 Vendor: Record Vendor;
+                SalesLine: Record "Sales Line";
                 SentLinesMgmt: Codeunit "Sent Lines Mgmt";
                 DeleteVendorDataLbl: Label 'If you change vendor all the data from the current vendor will be deleted from the web service. Are you sure you want to change vendor?';
             begin
                 if xRec."Vendor No." <> '' then begin
-                    if Dialog.Confirm(DeleteVendorDataLbl) then
-                        SentLinesMgmt.RemoveCustomerDataFromWS(Rec."Customer No.")
+                    if Dialog.Confirm(DeleteVendorDataLbl) then begin
+                        SentLinesMgmt.RemoveCustomerDataFromWS(Rec."Customer No.");
+                        SentLinesMgmt.InitAllLinesStatus(SalesLine.Status::Pending);
+                    end
                     else
                         "Vendor No." := xRec."Vendor No.";
                 end;

@@ -43,11 +43,6 @@
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method GetSentLinesBaseUrl - NamedType ErrorNoUrlLbl</note>
         </trans-unit>
-        <trans-unit id="Codeunit 566758270 - Method 1856143843 - NamedType 2374456139" size-unit="char" translate="yes" xml:space="preserve">
-          <source>Some items in the order do not have Vendor Item No. configured. Sales lines containing these items could not be sent.</source>
-          <note from="Developer" annotates="general" priority="2"></note>
-          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method Inform - NamedType VendorItemNoNeededLbl</note>
-        </trans-unit>
         <trans-unit id="Codeunit 566758270 - Method 4102726404 - NamedType 3569966352" size-unit="char" translate="yes" xml:space="preserve">
           <source>Sales Integration Job Queue Entry</source>
           <note from="Developer" annotates="general" priority="2"></note>
@@ -62,6 +57,11 @@
           <source>Vendor %1 has added a line with the next item: %2. There is no registry for this item, do you want to create one? Otherwise the line will be ignored.</source>
           <note from="Developer" annotates="general" priority="2"></note>
           <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method InsertSalesLineFromJsonObject - NamedType CreateItemLbl</note>
+        </trans-unit>
+        <trans-unit id="Codeunit 566758270 - Method 868374050 - NamedType 2374456139" size-unit="char" translate="yes" xml:space="preserve">
+          <source>Some items in the order do not have Vendor Item No. configured. Sales lines containing these items could not be sent.</source>
+          <note from="Developer" annotates="general" priority="2"></note>
+          <note from="Xliff Generator" annotates="general" priority="3">Codeunit Sent Lines Mgmt - Method SendLinesToWS - NamedType VendorItemNoNeededLbl</note>
         </trans-unit>
         <trans-unit id="Codeunit 3372244908 - Method 1879162368 - NamedType 3941846598" size-unit="char" translate="yes" xml:space="preserve">
           <source>Items acquired from vendor %1 cannot be purchased together with items acquired from other vendors.</source>

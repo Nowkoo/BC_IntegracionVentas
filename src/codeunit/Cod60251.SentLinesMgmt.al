@@ -15,12 +15,12 @@ codeunit 60251 "Sent Lines Mgmt"
         if SalesHeader.FindSet() then
             repeat
                 PrepareLines(SalesHeader);
-                Inform(SalesHeader);
+                SendLinesToWS(SalesHeader);
             until SalesHeader.Next() = 0;
     end;
 
     //Envía la cabecera y las líneas del pedido los WS (de cabeceras y de líneas)
-    procedure Inform(SalesHeader: Record "Sales Header")
+    procedure SendLinesToWS(SalesHeader: Record "Sales Header")
     var
         SalesLine: Record "Sales Line";
         Item: Record Item;
@@ -327,13 +327,11 @@ codeunit 60251 "Sent Lines Mgmt"
     procedure RemoveFromCustomer(BaseURL: Text; IdKey: Text; CustomerNo: Code[20])
     var
         URL: Text;
-        PurchasesSetup: Record "Purchases & Payables Setup";
         HttpResponseMessage: HttpResponseMessage;
         JsonObject: JsonObject;
         JsonToken: JsonToken;
         JsonArray: JsonArray;
         JsonText: Text;
-        LineId: Text;
         HttpRequests: Codeunit "Prepared HTTP Requests";
     begin
         URL := BaseURL + '/?$filter=customerNo eq ''' + CustomerNo + '''';
@@ -439,7 +437,6 @@ codeunit 60251 "Sent Lines Mgmt"
         PurchasesSetup: Record "Purchases & Payables Setup";
         ErrorNotReadyLbl: Label 'All the sales lines from this order need to be ready before posting.';
     begin
-        //***
         PurchasesSetup.Get();
         if PurchasesSetup."Vendor No." <> '' then begin
             if IsFromExclusiveVendor and not IsOrderReady(SalesHeaderNo) then
@@ -616,6 +613,18 @@ codeunit 60251 "Sent Lines Mgmt"
         JobQueueEntry."Run on Fridays" := true;
         JobQueueEntry."Run on Saturdays" := true;
         JobQueueEntry."Run on Sundays" := true;
+    end;
+
+    procedure InitAllLinesStatus(EnumValue: Enum Status)
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        SalesLine.SetFilter(Status, '<>%1', EnumValue);
+        if SalesLine.FindSet() then
+            repeat
+                SalesLine.Status := EnumValue;
+                SalesLine.Modify();
+            until SalesLine.Next() = 0;
     end;
 
     var

@@ -35,7 +35,7 @@ pageextension 60251 "Sales Orders" extends "Sales Order List"
                     var
                         SentLinesMgmt: Codeunit "Sent Lines Mgmt";
                     begin
-                        SentLinesMgmt.Inform(Rec);
+                        SentLinesMgmt.SendLinesToWS(Rec);
                     end;
                 }
 
